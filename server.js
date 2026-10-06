@@ -175,7 +175,7 @@ const DEFAULT_DATA = {
     ],
 
     general: {
-        siteName: "STX.GG",
+        siteName: "STX OFFICIAL",
         footerDesc: "The premier destination for competitive gaming, content creation, and community building in Southeast Asia.",
         discordUrl: "https://discord.gg/stx",
         instagramUrl: "https://instagram.com/stxcommunity",
