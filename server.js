@@ -56,6 +56,55 @@ const DEFAULT_DATA = {
         }
     ],
 
+    roster: [
+        {
+            id: "roster-1",
+            divisionName: "DELTA FORCE MOBILE • PRO ROSTER",
+            category: "ESPORTS DIVISION",
+            categoryColor: "accent-glow",
+            description: "Tier 1 Squad • Active Major Competitors",
+            starterCount: "5 STARTERS",
+            recruitLink: "https://discord.gg/stx",
+            players: [
+                { id: "p1", alias: "STX • PHANTOM", realName: "Fathir \"Phantom\" R.", role: "IGL / CAPTAIN", roleColor: "accent-glow", photo: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=400&auto=format&fit=crop" },
+                { id: "p2", alias: "STX • VIPER", realName: "Raka \"Viper\" P.", role: "ENTRY FRAGGER", roleColor: "red-400", photo: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=400&auto=format&fit=crop" },
+                { id: "p3", alias: "STX • SHADOW", realName: "Bima \"Shadow\" A.", role: "SNIPER / RECON", roleColor: "yellow-400", photo: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=400&auto=format&fit=crop" },
+                { id: "p4", alias: "STX • AEGIS", realName: "Dimas \"Aegis\" K.", role: "SUPPORT / MED", roleColor: "green-400", photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop" },
+                { id: "p5", alias: "STX • CYCLONE", realName: "Nico \"Cyclone\" S.", role: "FLANKER", roleColor: "purple-400", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" }
+            ]
+        },
+        {
+            id: "roster-2",
+            divisionName: "MOBILE LEGENDS: BANG BANG",
+            category: "ESPORTS DIVISION",
+            categoryColor: "accent-glow",
+            description: "Competitive Squad • Regional Tournament Roster",
+            starterCount: "5 STARTERS",
+            recruitLink: "https://discord.gg/stx",
+            players: [
+                { id: "p6", alias: "STX • KRONOS", realName: "Fajri \"Kronos\"", role: "JUNGLER", roleColor: "yellow-400", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" },
+                { id: "p7", alias: "STX • MYSTIC", realName: "Aldi \"Mystic\"", role: "MID LANER", roleColor: "accent-glow", photo: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=400&auto=format&fit=crop" },
+                { id: "p8", alias: "STX • SNIPEX", realName: "Kevin \"Snipex\"", role: "GOLD LANER", roleColor: "red-400", photo: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=400&auto=format&fit=crop" },
+                { id: "p9", alias: "STX • TITAN", realName: "Rizky \"Titan\"", role: "EXP LANER", roleColor: "purple-400", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" },
+                { id: "p10", alias: "STX • WARDEN", realName: "Yoga \"Warden\"", role: "ROAMER / IGL", roleColor: "green-400", photo: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400&auto=format&fit=crop" }
+            ]
+        },
+        {
+            id: "roster-3",
+            divisionName: "STX BROTHERS • CONTENT CREATOR SQUAD",
+            category: "CONTENT CREATORS",
+            categoryColor: "purple-300",
+            description: "Streamers, Video Creators, and PUBG Mobile Influencers",
+            starterCount: "40+ TALENTS",
+            recruitLink: "https://tiktok.com/@official.spectranyx",
+            players: [
+                { id: "p11", alias: "STX • FOXGAMING", realName: "TikTok & YouTube Live", role: "PUBGM STREAMER", roleColor: "accent-glow", photo: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&auto=format&fit=crop" },
+                { id: "p12", alias: "STX • VALKYRIE", realName: "Highlight Clips & Shorts", role: "TIKTOK CREATOR", roleColor: "purple-300", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop" },
+                { id: "p13", alias: "STX • ECHO", realName: "Tournament Caster & Host", role: "SHOUTCASTER", roleColor: "accent-blue", photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=200&auto=format&fit=crop" }
+            ]
+        }
+    ],
+
     news: {
         featured: {
             tag: "UPDATE",
@@ -240,9 +289,21 @@ function readDb() {
         try {
             const raw = fs.readFileSync(DB_FILE, 'utf-8');
             const parsed = JSON.parse(raw);
-            if (!parsed.data) parsed.data = DEFAULT_DATA;
+            if (!parsed.data) {
+                parsed.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                writeDb(parsed);
+            } else {
+                let changed = false;
+                for (const key of Object.keys(DEFAULT_DATA)) {
+                    if (parsed.data[key] === undefined) {
+                        parsed.data[key] = JSON.parse(JSON.stringify(DEFAULT_DATA[key]));
+                        changed = true;
+                    }
+                }
+                if (changed) writeDb(parsed);
+            }
             if (!parsed._adminPassword) {
-                parsed._adminPassword = hashPassword("stx2025");
+                parsed._adminPassword = hashPassword("admin");
                 writeDb(parsed);
             } else if (!parsed._adminPassword.includes(':')) {
                 // Auto-upgrade plain password to secure scrypt hash
@@ -255,7 +316,7 @@ function readDb() {
         }
     }
     const initDb = {
-        _adminPassword: hashPassword("stx2025"),
+        _adminPassword: hashPassword("admin"),
         data: DEFAULT_DATA
     };
     writeDb(initDb);
@@ -371,8 +432,8 @@ app.post('/api/change-password', (req, res) => {
         return res.status(401).json({ error: "Password lama tidak sesuai!" });
     }
 
-    if (!newPassword || newPassword.trim().length < 6) {
-        return res.status(400).json({ error: "Password baru minimal 6 karakter demi keamanan!" });
+    if (!newPassword || newPassword.trim().length < 4) {
+        return res.status(400).json({ error: "Password baru minimal 4 karakter!" });
     }
 
     db._adminPassword = hashPassword(newPassword.trim());

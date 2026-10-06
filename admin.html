@@ -142,6 +142,9 @@
                 <button data-tab="tab-divisions" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
                     <i class="ph ph-game-controller text-lg text-purple-400"></i> Divisi & Squad
                 </button>
+                <button data-tab="tab-roster" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-users-four text-lg text-cyan-400"></i> Roster & Pemain
+                </button>
                 <button data-tab="tab-news" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
                     <i class="ph ph-newspaper text-lg text-yellow-400"></i> Berita & Intel
                 </button>
@@ -302,6 +305,26 @@
 
                     <!-- Division List Container -->
                     <div id="divisions-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Injected by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- TAB: ROSTER & PEMAIN -->
+                <section id="tab-roster" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-border pb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold flex items-center gap-2">
+                                <i class="ph ph-users-four text-cyan-400"></i> Roster & Lineup Pemain
+                            </h2>
+                            <p class="text-text-muted text-xs mt-1">Kelola daftar roster pemain per divisi yang tampil di halaman <a href="roster.html" target="_blank" class="text-accent-glow underline">roster.html</a>.</p>
+                        </div>
+                        <button id="add-roster-div-btn" class="btn-primary clip-edges text-xs py-2 px-3 flex items-center gap-2 self-start sm:self-auto">
+                            <i class="ph-bold ph-plus text-base"></i> TAMBAH DIVISI ROSTER
+                        </button>
+                    </div>
+
+                    <!-- Roster Divisions Container -->
+                    <div id="roster-list-container" class="space-y-6">
                         <!-- Injected by JavaScript -->
                     </div>
                 </section>

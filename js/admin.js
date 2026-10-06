@@ -252,6 +252,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Divisions List
         renderDivisionsList(data.divisions || []);
 
+        // Roster
+        renderRosterList(data.roster || []);
+
         // News (Featured)
         const news = data.news || {};
         const feat = news.featured || {};
@@ -446,6 +449,254 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
+    // ========================
+    // ROSTER MANAGEMENT SYSTEM
+    // ========================
+    function renderRosterList(rosterDivisions) {
+        const container = document.getElementById('roster-list-container');
+        if (!container) return;
+
+        if (!rosterDivisions || rosterDivisions.length === 0) {
+            container.innerHTML = `<div class="glass-panel p-8 text-center text-text-muted">
+                <i class="ph ph-users-four text-3xl mb-2 block text-cyan-400"></i>
+                Belum ada divisi roster. Klik "TAMBAH DIVISI ROSTER" untuk membuat lineup pemain.
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = rosterDivisions.map((rd, dIdx) => {
+            const playersHtml = (rd.players || []).map((p, pIdx) => `
+                <div class="glass-panel p-3 flex items-center gap-3 group">
+                    <img src="${convertImageUrl(p.photo) || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=400'}" class="w-12 h-12 rounded-full object-cover border border-accent-blue flex-shrink-0 bg-base-dark" alt="${p.alias}">
+                    <div class="flex-1 min-w-0">
+                        <span class="text-[10px] font-bold text-${p.roleColor || 'accent-glow'} uppercase block">${p.role || 'PLAYER'}</span>
+                        <h4 class="text-sm font-bold text-white truncate">${p.alias}</h4>
+                        <p class="text-[11px] text-text-muted truncate">${p.realName || '-'}</p>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0 opacity-60 group-hover:opacity-100">
+                        <button onclick="editRosterPlayer(${dIdx}, ${pIdx})" class="text-text-muted hover:text-white p-1" title="Edit Pemain">
+                            <i class="ph ph-pencil-simple text-sm"></i>
+                        </button>
+                        <button onclick="deleteRosterPlayer(${dIdx}, ${pIdx})" class="text-red-400 hover:text-red-300 p-1" title="Hapus Pemain">
+                            <i class="ph ph-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="glass-panel p-6 space-y-4 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-cyan-500"></div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-[10px] font-bold text-${rd.categoryColor || 'accent-glow'} uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded border border-white/10">${rd.category || 'DIVISION'}</span>
+                            <h3 class="text-lg font-bold text-white mt-1">${rd.divisionName}</h3>
+                            <p class="text-[11px] text-text-muted">${rd.description || '-'} • ${rd.starterCount || '?'}</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <button onclick="addRosterPlayer(${dIdx})" class="btn-secondary text-[11px] py-1.5 px-3 flex items-center gap-1">
+                                <i class="ph-bold ph-user-plus text-sm"></i> Tambah Pemain
+                            </button>
+                            <button onclick="editRosterDiv(${dIdx})" class="text-text-muted hover:text-white p-1.5" title="Edit Divisi">
+                                <i class="ph ph-gear text-base"></i>
+                            </button>
+                            <button onclick="deleteRosterDiv(${dIdx})" class="text-red-400 hover:text-red-300 p-1.5" title="Hapus Divisi">
+                                <i class="ph ph-trash text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-3 border-t border-surface-border/50">
+                        ${playersHtml || '<div class="col-span-full text-center text-text-muted text-xs py-4">Belum ada pemain. Klik "Tambah Pemain".</div>'}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Roster Division Add/Edit/Delete
+    const addRosterDivBtn = document.getElementById('add-roster-div-btn');
+    if (addRosterDivBtn) {
+        addRosterDivBtn.addEventListener('click', () => {
+            openItemModal("Tambah Divisi Roster", "Buat divisi baru untuk roster lineup pemain", `
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Divisi Roster</label>
+                    <input type="text" id="modal-rd-name" class="input-field" placeholder="Contoh: DELTA FORCE MOBILE • PRO ROSTER" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-text-muted uppercase mb-1">Kategori</label>
+                        <select id="modal-rd-category" class="input-field">
+                            <option value="ESPORTS DIVISION">ESPORTS DIVISION</option>
+                            <option value="CONTENT CREATORS">CONTENT CREATORS</option>
+                            <option value="REGIONAL">REGIONAL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-text-muted uppercase mb-1">Warna Kategori</label>
+                        <select id="modal-rd-color" class="input-field">
+                            <option value="accent-glow">Cyan (Esports)</option>
+                            <option value="purple-300">Ungu (Creators)</option>
+                            <option value="yellow-400">Kuning</option>
+                            <option value="red-400">Merah</option>
+                            <option value="green-400">Hijau</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Deskripsi / Status</label>
+                    <input type="text" id="modal-rd-desc" class="input-field" placeholder="Contoh: Tier 1 Squad • Active Major Competitors">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-text-muted uppercase mb-1">Jumlah Starter Label</label>
+                        <input type="text" id="modal-rd-count" class="input-field" placeholder="Contoh: 5 STARTERS">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-text-muted uppercase mb-1">Link Recruit / Tryout</label>
+                        <input type="text" id="modal-rd-link" class="input-field font-mono text-sm" placeholder="https://discord.gg/stx">
+                    </div>
+                </div>
+            `, { type: 'roster-div', mode: 'add', index: null });
+        });
+    }
+
+    window.editRosterDiv = function(dIdx) {
+        const rd = websiteData.roster[dIdx];
+        if (!rd) return;
+        openItemModal("Edit Divisi Roster", `Mengubah: ${rd.divisionName}`, `
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Divisi Roster</label>
+                <input type="text" id="modal-rd-name" class="input-field" value="${rd.divisionName || ''}" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Kategori</label>
+                    <select id="modal-rd-category" class="input-field">
+                        <option value="ESPORTS DIVISION" ${rd.category === 'ESPORTS DIVISION' ? 'selected' : ''}>ESPORTS DIVISION</option>
+                        <option value="CONTENT CREATORS" ${rd.category === 'CONTENT CREATORS' ? 'selected' : ''}>CONTENT CREATORS</option>
+                        <option value="REGIONAL" ${rd.category === 'REGIONAL' ? 'selected' : ''}>REGIONAL</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Warna Kategori</label>
+                    <select id="modal-rd-color" class="input-field">
+                        <option value="accent-glow" ${rd.categoryColor === 'accent-glow' ? 'selected' : ''}>Cyan (Esports)</option>
+                        <option value="purple-300" ${rd.categoryColor === 'purple-300' ? 'selected' : ''}>Ungu (Creators)</option>
+                        <option value="yellow-400" ${rd.categoryColor === 'yellow-400' ? 'selected' : ''}>Kuning</option>
+                        <option value="red-400" ${rd.categoryColor === 'red-400' ? 'selected' : ''}>Merah</option>
+                        <option value="green-400" ${rd.categoryColor === 'green-400' ? 'selected' : ''}>Hijau</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Deskripsi / Status</label>
+                <input type="text" id="modal-rd-desc" class="input-field" value="${rd.description || ''}">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Jumlah Starter Label</label>
+                    <input type="text" id="modal-rd-count" class="input-field" value="${rd.starterCount || ''}">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Link Recruit / Tryout</label>
+                    <input type="text" id="modal-rd-link" class="input-field font-mono text-sm" value="${rd.recruitLink || ''}">
+                </div>
+            </div>
+        `, { type: 'roster-div', mode: 'edit', index: dIdx });
+    };
+
+    window.deleteRosterDiv = function(dIdx) {
+        openConfirmModal("Hapus Divisi Roster", "Yakin ingin menghapus divisi roster ini beserta semua pemainnya?", () => {
+            websiteData.roster.splice(dIdx, 1);
+            renderRosterList(websiteData.roster);
+            updateSyncStatus(false);
+            showToast("Divisi roster dihapus. Klik 'SIMPAN PERUBAHAN' untuk update server.", "info");
+        });
+    };
+
+    // Player Add/Edit/Delete within a Roster Division
+    window.addRosterPlayer = function(dIdx) {
+        openItemModal("Tambah Pemain Baru", `Menambahkan ke: ${websiteData.roster[dIdx]?.divisionName || 'Divisi'}`, `
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Alias / In-Game Name</label>
+                <input type="text" id="modal-rp-alias" class="input-field" placeholder="Contoh: STX • PHANTOM" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Asli</label>
+                <input type="text" id="modal-rp-realname" class="input-field" placeholder='Contoh: Fathir "Phantom" R.'>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Role / Posisi</label>
+                    <input type="text" id="modal-rp-role" class="input-field" placeholder="Contoh: IGL / CAPTAIN">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Warna Role</label>
+                    <select id="modal-rp-color" class="input-field">
+                        <option value="accent-glow">Cyan (IGL/Leader)</option>
+                        <option value="red-400">Merah (Fragger)</option>
+                        <option value="yellow-400">Kuning (Sniper)</option>
+                        <option value="green-400">Hijau (Support)</option>
+                        <option value="purple-400">Ungu (Flanker)</option>
+                        <option value="purple-300">Ungu Muda (Creator)</option>
+                        <option value="accent-blue">Biru</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">URL Foto Profil</label>
+                <input type="text" id="modal-rp-photo" class="input-field text-sm font-mono" placeholder="https://images.unsplash.com/... atau link Google Drive">
+            </div>
+        `, { type: 'roster-player', mode: 'add', index: dIdx, playerIndex: null });
+    };
+
+    window.editRosterPlayer = function(dIdx, pIdx) {
+        const player = websiteData.roster[dIdx]?.players[pIdx];
+        if (!player) return;
+        openItemModal("Edit Pemain", `Mengubah: ${player.alias}`, `
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Alias / In-Game Name</label>
+                <input type="text" id="modal-rp-alias" class="input-field" value="${player.alias || ''}" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Asli</label>
+                <input type="text" id="modal-rp-realname" class="input-field" value="${player.realName || ''}">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Role / Posisi</label>
+                    <input type="text" id="modal-rp-role" class="input-field" value="${player.role || ''}">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Warna Role</label>
+                    <select id="modal-rp-color" class="input-field">
+                        <option value="accent-glow" ${player.roleColor === 'accent-glow' ? 'selected' : ''}>Cyan (IGL/Leader)</option>
+                        <option value="red-400" ${player.roleColor === 'red-400' ? 'selected' : ''}>Merah (Fragger)</option>
+                        <option value="yellow-400" ${player.roleColor === 'yellow-400' ? 'selected' : ''}>Kuning (Sniper)</option>
+                        <option value="green-400" ${player.roleColor === 'green-400' ? 'selected' : ''}>Hijau (Support)</option>
+                        <option value="purple-400" ${player.roleColor === 'purple-400' ? 'selected' : ''}>Ungu (Flanker)</option>
+                        <option value="purple-300" ${player.roleColor === 'purple-300' ? 'selected' : ''}>Ungu Muda (Creator)</option>
+                        <option value="accent-blue" ${player.roleColor === 'accent-blue' ? 'selected' : ''}>Biru</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">URL Foto Profil</label>
+                <input type="text" id="modal-rp-photo" class="input-field text-sm font-mono" value="${player.photo || ''}">
+            </div>
+        `, { type: 'roster-player', mode: 'edit', index: dIdx, playerIndex: pIdx });
+    };
+
+    window.deleteRosterPlayer = function(dIdx, pIdx) {
+        const player = websiteData.roster[dIdx]?.players[pIdx];
+        openConfirmModal("Hapus Pemain", `Yakin ingin menghapus ${player?.alias || 'pemain ini'} dari roster?`, () => {
+            websiteData.roster[dIdx].players.splice(pIdx, 1);
+            renderRosterList(websiteData.roster);
+            updateSyncStatus(false);
+            showToast("Pemain dihapus dari roster lokal.", "info");
+        });
+    };
+
     // 9. Item Editor Modal System (Add / Edit dynamic entities)
     const itemModal = document.getElementById('item-editor-modal');
     const itemModalTitle = document.getElementById('item-modal-title');
@@ -537,6 +788,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mode === 'add') websiteData.general.partners.push(item);
                 else websiteData.general.partners[index] = item;
                 renderPartnersList(websiteData.general.partners);
+            }
+            else if (type === 'roster-div') {
+                const item = {
+                    id: mode === 'edit' && websiteData.roster[index]?.id ? websiteData.roster[index].id : `roster-${Date.now()}`,
+                    divisionName: getVal('modal-rd-name'),
+                    category: getVal('modal-rd-category') || 'ESPORTS DIVISION',
+                    categoryColor: getVal('modal-rd-color') || 'accent-glow',
+                    description: getVal('modal-rd-desc'),
+                    starterCount: getVal('modal-rd-count'),
+                    recruitLink: getVal('modal-rd-link') || '#',
+                    players: mode === 'edit' && websiteData.roster[index] ? websiteData.roster[index].players : []
+                };
+                if (!websiteData.roster) websiteData.roster = [];
+                if (mode === 'add') websiteData.roster.push(item);
+                else websiteData.roster[index] = item;
+                renderRosterList(websiteData.roster);
+            }
+            else if (type === 'roster-player') {
+                // currentModalAction should have { index: dIdx, playerIndex: pIdx }
+                const { playerIndex } = currentModalAction;
+                if (!websiteData.roster[index]) return;
+                
+                const item = {
+                    id: mode === 'edit' && websiteData.roster[index].players[playerIndex]?.id ? websiteData.roster[index].players[playerIndex].id : `p-${Date.now()}`,
+                    alias: getVal('modal-rp-alias'),
+                    realName: getVal('modal-rp-realname'),
+                    role: getVal('modal-rp-role'),
+                    roleColor: getVal('modal-rp-color') || 'accent-glow',
+                    photo: getVal('modal-rp-photo') || 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=400'
+                };
+                
+                if (!websiteData.roster[index].players) websiteData.roster[index].players = [];
+                if (mode === 'add') websiteData.roster[index].players.push(item);
+                else websiteData.roster[index].players[playerIndex] = item;
+                renderRosterList(websiteData.roster);
             }
 
             closeItemModal();
