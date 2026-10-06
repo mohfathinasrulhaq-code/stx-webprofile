@@ -291,9 +291,18 @@ app.use('/js', express.static(path.join(__dirname, 'js')));
 
 // Melayani halaman HTML
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/index', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/divisions', (req, res) => res.sendFile(path.join(__dirname, 'divisions.html')));
+app.get('/divisions.html', (req, res) => res.sendFile(path.join(__dirname, 'divisions.html')));
+app.get('/roster', (req, res) => res.sendFile(path.join(__dirname, 'roster.html')));
+app.get('/roster.html', (req, res) => res.sendFile(path.join(__dirname, 'roster.html')));
+app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
+app.get('/events.html', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
 app.get('/shop', (req, res) => res.sendFile(path.join(__dirname, 'shop.html')));
 app.get('/shop.html', (req, res) => res.sendFile(path.join(__dirname, 'shop.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 // API Endpoint untuk mengambil data ke pengunjung (Global)
 app.get('/api/data', (req, res) => {

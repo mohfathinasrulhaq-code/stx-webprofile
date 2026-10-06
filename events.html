@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STX Community | Events & Match Schedule</title>
+    <meta name="description" content="Official Tournaments, Matches, and Community Events of STX Community.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS v4 Browser -->
+    <style type="text/tailwindcss">
+        @theme {
+          --color-base-dark: #0A0D14;
+          --color-surface: #151921;
+          --color-surface-border: #2D3748;
+          --color-accent-blue: #0066FF;
+          --color-accent-glow: #00E5FF;
+          --color-text-main: #FFFFFF;
+          --color-text-muted: #9CA3AF;
+        
+          --font-display: "Chakra Petch", sans-serif;
+          --font-body: "Inter", sans-serif;
+        
+          --animate-float: float 3s ease-in-out infinite;
+          --animate-pulse-glow: pulseGlow 2s infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 15px var(--color-accent-blue); }
+          50% { box-shadow: 0 0 30px var(--color-accent-glow); }
+        }
+        
+        @layer base {
+          body { @apply bg-base-dark text-text-main font-body; }
+          h1, h2, h3, h4, h5, h6 { @apply font-display tracking-wide uppercase; }
+        }
+        
+        @layer utilities {
+          .glass-panel { @apply bg-surface/80 backdrop-blur-md border border-surface-border; }
+          .glass-panel:hover { @apply border-accent-blue/50 transition-colors duration-300; }
+          .btn-primary { @apply bg-accent-blue text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:bg-accent-glow hover:shadow-[0_0_20px_rgba(0,229,255,0.5)] active:scale-95; }
+          .btn-ghost { @apply border border-surface-border text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:border-text-main hover:bg-white/5 active:scale-95; }
+          .text-glow { text-shadow: 0 0 10px var(--color-accent-blue); }
+          .clip-edges { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        }
+    </style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="relative">
+
+    <!-- Ambient Background Glow -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-accent-blue/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-accent-glow/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- Header / Nav -->
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-surface-border transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="window.location.href='index.html'">
+                    <img id="ui-logo-img" src="" class="h-10 hidden mr-2 object-contain" alt="Logo">
+                    <div id="ui-logo-text" class="flex items-center">
+                        <i class="ph-fill ph-hexagon text-4xl text-accent-blue group-hover:text-accent-glow transition-colors duration-300 mr-2 text-glow"></i>
+                        <span class="font-display font-bold text-2xl tracking-widest text-white group-hover:text-accent-glow transition-colors duration-300">STX<span class="text-accent-blue">.GG</span></span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">HOME</a>
+                    <a href="divisions.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">DIVISIONS</a>
+                    <a href="roster.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">ROSTER</a>
+                    <a href="events.html" class="text-sm font-medium text-white hover:text-accent-glow transition-colors border-b-2 border-accent-blue pb-1">EVENTS</a>
+                    <a href="shop.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">SHOP</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="index.html#join" class="btn-primary clip-edges text-sm py-2">JOIN COMMUNITY</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-text-muted hover:text-white focus:outline-none">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-base-dark/95 backdrop-blur-lg transform translate-x-full transition-transform duration-300 md:hidden flex flex-col justify-center items-center space-y-6">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white">
+            <i class="ph ph-x text-3xl"></i>
+        </button>
+        <a href="index.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">HOME</a>
+        <a href="divisions.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">DIVISIONS</a>
+        <a href="roster.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">ROSTER</a>
+        <a href="events.html" class="text-2xl font-display font-bold text-accent-glow">EVENTS</a>
+        <a href="shop.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">SHOP</a>
+        <a href="index.html#join" class="btn-primary clip-edges mt-4">JOIN COMMUNITY</a>
+    </div>
+
+    <!-- Page Banner -->
+    <section class="pt-32 pb-12 relative overflow-hidden border-b border-surface-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center space-x-2 border border-accent-blue/30 bg-accent-blue/10 px-4 py-1.5 rounded-full mb-4">
+                <span class="w-2 h-2 rounded-full bg-accent-glow animate-pulse"></span>
+                <span class="text-xs font-mono text-accent-glow uppercase tracking-widest">TOURNAMENTS & GATHERINGS</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+                COMMUNITY <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-glow">EVENTS & BATTLES</span>
+            </h1>
+            <p class="text-text-muted max-w-2xl mx-auto text-sm md:text-base">
+                Ikuti terus jadwal pertandingan esports turnamen resmi, scrim mingguan, dan acara kumpul komunitas online & offline STX.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content: Matches & Calendar -->
+    <main class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Featured Match Spotlight -->
+        <div class="glass-panel p-8 md:p-12 clip-edges border-accent-blue/40 mb-16 relative overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-accent-blue/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="flex-1 text-center lg:text-left">
+                    <span class="inline-block bg-accent-blue/20 text-accent-glow border border-accent-blue/40 text-xs font-bold px-3 py-1 rounded mb-3">
+                        NEXT BIG MATCH
+                    </span>
+                    <h2 id="spotlight-title" class="text-3xl md:text-5xl font-bold text-white mb-2">STX vs CLOUD9</h2>
+                    <p id="spotlight-league" class="text-text-muted text-base mb-6">VCT Pacific League - Week 4</p>
+                    
+                    <!-- Countdown Display -->
+                    <div class="flex justify-center lg:justify-start gap-4 text-center">
+                        <div class="glass-panel px-4 py-3 min-w-[70px] border-surface-border">
+                            <span id="spotlight-days" class="block text-2xl md:text-3xl font-bold font-display text-accent-glow">00</span>
+                            <span class="text-[10px] text-text-muted uppercase">Hari</span>
+                        </div>
+                        <div class="glass-panel px-4 py-3 min-w-[70px] border-surface-border">
+                            <span id="spotlight-hours" class="block text-2xl md:text-3xl font-bold font-display text-white">00</span>
+                            <span class="text-[10px] text-text-muted uppercase">Jam</span>
+                        </div>
+                        <div class="glass-panel px-4 py-3 min-w-[70px] border-surface-border">
+                            <span id="spotlight-mins" class="block text-2xl md:text-3xl font-bold font-display text-white">00</span>
+                            <span class="text-[10px] text-text-muted uppercase">Menit</span>
+                        </div>
+                        <div class="glass-panel px-4 py-3 min-w-[70px] border-surface-border">
+                            <span id="spotlight-secs" class="block text-2xl md:text-3xl font-bold font-display text-accent-blue">00</span>
+                            <span class="text-[10px] text-text-muted uppercase">Detik</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4 w-full lg:w-auto">
+                    <a id="spotlight-btn" href="#" class="btn-primary clip-edges text-center py-4 px-8 inline-flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-bell-ringing text-xl"></i> PASANG PENGINGAT MATCH
+                    </a>
+                    <a href="https://discord.gg/stx" target="_blank" class="btn-ghost clip-edges text-center py-3 px-8 inline-flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-television text-xl"></i> NOBAR DI DISCORD
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events List Grid -->
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+            <i class="ph-bold ph-calendar text-accent-blue"></i> JADWAL KEGIATAN KOMUNITAS
+        </h3>
+
+        <div id="events-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Community Gathering Card -->
+            <div class="glass-panel p-6 clip-edges flex flex-col justify-between hover:border-accent-blue/50 transition-colors">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/40 rounded">
+                            COMMUNITY EVENT
+                        </span>
+                        <span id="event-comm-date" class="text-xs text-text-muted font-mono">OCTOBER 2026</span>
+                    </div>
+                    <h4 id="event-comm-title" class="text-xl font-bold text-white mb-2">Community Gathering V.4</h4>
+                    <p id="event-comm-sub" class="text-text-muted text-sm mb-4">Discord Online Event & Watch Party bersama seluruh member STX</p>
+                </div>
+                <div class="pt-4 border-t border-surface-border flex items-center justify-between">
+                    <span id="event-comm-schedule" class="text-xs font-bold text-accent-glow">OCT 10, 2026 • 20:00 WIB</span>
+                    <a id="event-comm-link" href="https://discord.gg/stx" target="_blank" class="btn-primary text-xs py-2 px-4 clip-edges">RSVP SEKARANG</a>
+                </div>
+            </div>
+
+            <!-- Scrim Weekly Card -->
+            <div class="glass-panel p-6 clip-edges flex flex-col justify-between hover:border-accent-blue/50 transition-colors">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 bg-green-500/20 text-green-300 border border-green-500/40 rounded">
+                            WEEKLY SCRIM
+                        </span>
+                        <span class="text-xs text-text-muted font-mono">EVERY WEEKEND</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-2">Internal Community Scrimmage</h4>
+                    <p class="text-text-muted text-sm mb-4">Latihan tanding antar squad divisi Delta Force Mobile & Mobile Legends STX.</p>
+                </div>
+                <div class="pt-4 border-t border-surface-border flex items-center justify-between">
+                    <span class="text-xs font-bold text-accent-glow">SABTU & MINGGU • 20:30 WIB</span>
+                    <a href="https://discord.gg/stx" target="_blank" class="btn-ghost text-xs py-2 px-4 clip-edges">GABUNG DISCORD</a>
+                </div>
+            </div>
+
+            <!-- Merchandise Giveaway -->
+            <div class="glass-panel p-6 clip-edges flex flex-col justify-between hover:border-accent-blue/50 transition-colors">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 bg-accent-blue/20 text-accent-glow border border-accent-blue/40 rounded">
+                            SPECIAL EVENT
+                        </span>
+                        <span class="text-xs text-text-muted font-mono">SEASONAL</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-2">STX Anniversary Merchandise Drop</h4>
+                    <p class="text-text-muted text-sm mb-4">Giveaway jersey eksklusif dan merchandise resmi bagi anggota teraktif komunitas.</p>
+                </div>
+                <div class="pt-4 border-t border-surface-border flex items-center justify-between">
+                    <span class="text-xs font-bold text-accent-glow">CEK KATALOG SHOP</span>
+                    <a href="shop.html" class="btn-ghost text-xs py-2 px-4 clip-edges">LIHAT PRODUK</a>
+                </div>
+            </div>
+
+            <!-- Creator Workshop -->
+            <div class="glass-panel p-6 clip-edges flex flex-col justify-between hover:border-accent-blue/50 transition-colors">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-bold px-2.5 py-1 bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 rounded">
+                            WORKSHOP
+                        </span>
+                        <span class="text-xs text-text-muted font-mono">MONTHLY</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-2">Content Creator Coaching Clinic</h4>
+                    <p class="text-text-muted text-sm mb-4">Sesi sharing tips streaming TikTok & YouTube bersama para kreator STX Brothers.</p>
+                </div>
+                <div class="pt-4 border-t border-surface-border flex items-center justify-between">
+                    <span class="text-xs font-bold text-accent-glow">LIVE STREAM DISCORD</span>
+                    <a href="https://discord.gg/stx" target="_blank" class="btn-ghost text-xs py-2 px-4 clip-edges">JOIN VOICE</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-base-dark border-t border-surface-border py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-text-muted">
+            <div class="flex items-center space-x-2">
+                <i class="ph-fill ph-hexagon text-2xl text-accent-blue"></i>
+                <span class="font-display font-bold tracking-widest text-white">STX<span class="text-accent-blue">.GG</span></span>
+            </div>
+            <p>© 2026 STX COMMUNITY. ALL RIGHTS RESERVED.</p>
+            <div class="flex space-x-6 text-lg">
+                <a id="foot-discord" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-discord-logo"></i></a>
+                <a id="foot-instagram" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-instagram-logo"></i></a>
+                <a id="foot-youtube" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-youtube-logo"></i></a>
+                <a id="foot-tiktok" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-tiktok-logo"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function convertImageUrl(url) {
+            if (!url) return url;
+            const gdriveRegex = /drive\.google\.com\/file\/d\/([^\/]+)/;
+            const match = url.match(gdriveRegex);
+            if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+            const gdriveOpenRegex = /drive\.google\.com\/open\?id=([^\&]+)/;
+            const matchOpen = url.match(gdriveOpenRegex);
+            if (matchOpen && matchOpen[1]) return `https://drive.google.com/uc?export=view&id=${matchOpen[1]}`;
+            return url;
+        }
+
+        let targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 14);
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const diff = targetDate.getTime() - now;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                const dEl = document.getElementById('spotlight-days');
+                const hEl = document.getElementById('spotlight-hours');
+                const mEl = document.getElementById('spotlight-mins');
+                const sEl = document.getElementById('spotlight-secs');
+                if (dEl) dEl.innerText = String(days).padStart(2, '0');
+                if (hEl) hEl.innerText = String(hours).padStart(2, '0');
+                if (mEl) mEl.innerText = String(mins).padStart(2, '0');
+                if (sEl) sEl.innerText = String(secs).padStart(2, '0');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const closeBtn = document.getElementById('close-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) mobileBtn.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
+            if (closeBtn && mobileMenu) closeBtn.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
+
+            fetch('/api/data')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data) return;
+
+                    // Match
+                    if (data.events && data.events.match) {
+                        const m = data.events.match;
+                        if (m.opponent) document.getElementById('spotlight-title').innerText = m.opponent;
+                        if (m.league) document.getElementById('spotlight-league').innerText = m.league;
+                        if (m.targetDate) {
+                            const parsed = new Date(m.targetDate);
+                            if (!isNaN(parsed.getTime())) targetDate = parsed;
+                        }
+                        if (m.buttonText) document.getElementById('spotlight-btn').innerHTML = `<i class="ph-bold ph-bell-ringing text-xl"></i> ${m.buttonText}`;
+                        if (m.buttonLink) document.getElementById('spotlight-btn').href = m.buttonLink;
+                    }
+
+                    // Community Event
+                    if (data.events && data.events.community) {
+                        const c = data.events.community;
+                        if (c.title) document.getElementById('event-comm-title').innerText = c.title;
+                        if (c.subtitle) document.getElementById('event-comm-sub').innerText = c.subtitle;
+                        if (c.scheduleText) document.getElementById('event-comm-schedule').innerText = c.scheduleText;
+                        if (c.buttonText) document.getElementById('event-comm-link').innerText = c.buttonText;
+                        if (c.buttonLink) document.getElementById('event-comm-link').href = c.buttonLink;
+                    }
+
+                    // Logo
+                    if (data.general && data.general.logoUrl) {
+                        const logoImg = document.getElementById('ui-logo-img');
+                        const logoText = document.getElementById('ui-logo-text');
+                        if (logoImg) {
+                            logoImg.src = convertImageUrl(data.general.logoUrl);
+                            logoImg.classList.remove('hidden');
+                        }
+                        if (logoText) logoText.classList.add('hidden');
+                    }
+
+                    // Socials
+                    if (data.general) {
+                        const g = data.general;
+                        if (g.discordUrl) document.getElementById('foot-discord').href = g.discordUrl;
+                        if (g.instagramUrl) document.getElementById('foot-instagram').href = g.instagramUrl;
+                        if (g.youtubeUrl) document.getElementById('foot-youtube').href = g.youtubeUrl;
+                        if (g.tiktokUrl) document.getElementById('foot-tiktok').href = g.tiktokUrl;
+                    }
+                })
+                .catch(e => console.error("Gagal load data events:", e));
+        });
+    </script>
+</body>
+</html>

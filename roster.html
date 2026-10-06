@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STX Community | Roster & Lineups</title>
+    <meta name="description" content="Official Players, Content Creators, and Squad Lineups of STX Community.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS v4 Browser -->
+    <style type="text/tailwindcss">
+        @theme {
+          --color-base-dark: #0A0D14;
+          --color-surface: #151921;
+          --color-surface-border: #2D3748;
+          --color-accent-blue: #0066FF;
+          --color-accent-glow: #00E5FF;
+          --color-text-main: #FFFFFF;
+          --color-text-muted: #9CA3AF;
+        
+          --font-display: "Chakra Petch", sans-serif;
+          --font-body: "Inter", sans-serif;
+        
+          --animate-float: float 3s ease-in-out infinite;
+          --animate-pulse-glow: pulseGlow 2s infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 15px var(--color-accent-blue); }
+          50% { box-shadow: 0 0 30px var(--color-accent-glow); }
+        }
+        
+        @layer base {
+          body { @apply bg-base-dark text-text-main font-body; }
+          h1, h2, h3, h4, h5, h6 { @apply font-display tracking-wide uppercase; }
+        }
+        
+        @layer utilities {
+          .glass-panel { @apply bg-surface/80 backdrop-blur-md border border-surface-border; }
+          .glass-panel:hover { @apply border-accent-blue/50 transition-colors duration-300; }
+          .btn-primary { @apply bg-accent-blue text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:bg-accent-glow hover:shadow-[0_0_20px_rgba(0,229,255,0.5)] active:scale-95; }
+          .btn-ghost { @apply border border-surface-border text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:border-text-main hover:bg-white/5 active:scale-95; }
+          .text-glow { text-shadow: 0 0 10px var(--color-accent-blue); }
+          .clip-edges { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        }
+    </style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="relative">
+
+    <!-- Ambient Background Glow -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-accent-blue/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-accent-glow/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- Header / Nav -->
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-surface-border transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="window.location.href='index.html'">
+                    <img id="ui-logo-img" src="" class="h-10 hidden mr-2 object-contain" alt="Logo">
+                    <div id="ui-logo-text" class="flex items-center">
+                        <i class="ph-fill ph-hexagon text-4xl text-accent-blue group-hover:text-accent-glow transition-colors duration-300 mr-2 text-glow"></i>
+                        <span class="font-display font-bold text-2xl tracking-widest text-white group-hover:text-accent-glow transition-colors duration-300">STX<span class="text-accent-blue">.GG</span></span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">HOME</a>
+                    <a href="divisions.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">DIVISIONS</a>
+                    <a href="roster.html" class="text-sm font-medium text-white hover:text-accent-glow transition-colors border-b-2 border-accent-blue pb-1">ROSTER</a>
+                    <a href="events.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">EVENTS</a>
+                    <a href="shop.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors">SHOP</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="index.html#join" class="btn-primary clip-edges text-sm py-2">JOIN COMMUNITY</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-text-muted hover:text-white focus:outline-none">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-base-dark/95 backdrop-blur-lg transform translate-x-full transition-transform duration-300 md:hidden flex flex-col justify-center items-center space-y-6">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white">
+            <i class="ph ph-x text-3xl"></i>
+        </button>
+        <a href="index.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">HOME</a>
+        <a href="divisions.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">DIVISIONS</a>
+        <a href="roster.html" class="text-2xl font-display font-bold text-accent-glow">ROSTER</a>
+        <a href="events.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">EVENTS</a>
+        <a href="shop.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">SHOP</a>
+        <a href="index.html#join" class="btn-primary clip-edges mt-4">JOIN COMMUNITY</a>
+    </div>
+
+    <!-- Page Banner -->
+    <section class="pt-32 pb-12 relative overflow-hidden border-b border-surface-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center space-x-2 border border-accent-blue/30 bg-accent-blue/10 px-4 py-1.5 rounded-full mb-4">
+                <span class="w-2 h-2 rounded-full bg-accent-glow animate-pulse"></span>
+                <span class="text-xs font-mono text-accent-glow uppercase tracking-widest">OFFICIAL TALENTS & COMPETITORS</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+                OFFICIAL <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-glow">ROSTER & TALENTS</span>
+            </h1>
+            <p class="text-text-muted max-w-2xl mx-auto text-sm md:text-base">
+                Kenali para pro player, starter lineup, dan content creator yang bertarung serta berkarya di bawah naungan bendera STX Community.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content: Squad Lineups -->
+    <main class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        
+        <!-- Division 1: Delta Force Mobile -->
+        <section class="glass-panel p-8 clip-edges border-accent-blue/30">
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-surface-border mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-mono font-bold text-accent-glow bg-accent-blue/20 px-3 py-1 rounded border border-accent-blue/40 uppercase">ESPORTS DIVISION</span>
+                    <h2 class="text-3xl font-bold text-white mt-2">DELTA FORCE MOBILE • PRO ROSTER</h2>
+                    <p class="text-text-muted text-sm mt-1">Tier 1 Squad • Active Major Competitors</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold bg-white/10 px-3 py-1.5 rounded text-white border border-white/20">5 STARTERS</span>
+                    <a href="https://discord.gg/stx" target="_blank" class="btn-ghost text-xs py-2 px-4 clip-edges">TRYOUT / RECRUIT</a>
+                </div>
+            </div>
+
+            <!-- Player Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                <!-- Player 1 -->
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-accent-glow uppercase tracking-wider block mb-1">IGL / CAPTAIN</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • PHANTOM</h4>
+                    <p class="text-text-muted text-xs mt-1">Fathir "Phantom" R.</p>
+                </div>
+
+                <!-- Player 2 -->
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider block mb-1">ENTRY FRAGGER</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • VIPER</h4>
+                    <p class="text-text-muted text-xs mt-1">Raka "Viper" P.</p>
+                </div>
+
+                <!-- Player 3 -->
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-yellow-400 uppercase tracking-wider block mb-1">SNIPER / RECON</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • SHADOW</h4>
+                    <p class="text-text-muted text-xs mt-1">Bima "Shadow" A.</p>
+                </div>
+
+                <!-- Player 4 -->
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-green-400 uppercase tracking-wider block mb-1">SUPPORT / MED</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • AEGIS</h4>
+                    <p class="text-text-muted text-xs mt-1">Dimas "Aegis" K.</p>
+                </div>
+
+                <!-- Player 5 -->
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider block mb-1">FLANKER</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • CYCLONE</h4>
+                    <p class="text-text-muted text-xs mt-1">Nico "Cyclone" S.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Division 2: Mobile Legends -->
+        <section class="glass-panel p-8 clip-edges border-accent-blue/30">
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-surface-border mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-mono font-bold text-accent-glow bg-accent-blue/20 px-3 py-1 rounded border border-accent-blue/40 uppercase">ESPORTS DIVISION</span>
+                    <h2 class="text-3xl font-bold text-white mt-2">MOBILE LEGENDS: BANG BANG</h2>
+                    <p class="text-text-muted text-sm mt-1">Competitive Squad • Regional Tournament Roster</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold bg-white/10 px-3 py-1.5 rounded text-white border border-white/20">5 STARTERS</span>
+                    <a href="https://discord.gg/stx" target="_blank" class="btn-ghost text-xs py-2 px-4 clip-edges">TRYOUT / RECRUIT</a>
+                </div>
+            </div>
+
+            <!-- Player Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-yellow-400 uppercase tracking-wider block mb-1">JUNGLER</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • KRONOS</h4>
+                    <p class="text-text-muted text-xs mt-1">Fajri "Kronos"</p>
+                </div>
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-accent-glow uppercase tracking-wider block mb-1">MID LANER</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • MYSTIC</h4>
+                    <p class="text-text-muted text-xs mt-1">Aldi "Mystic"</p>
+                </div>
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider block mb-1">GOLD LANER</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • SNIPEX</h4>
+                    <p class="text-text-muted text-xs mt-1">Kevin "Snipex"</p>
+                </div>
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider block mb-1">EXP LANER</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • TITAN</h4>
+                    <p class="text-text-muted text-xs mt-1">Rizky "Titan"</p>
+                </div>
+                <div class="glass-panel p-4 text-center group hover:border-accent-glow transition-all">
+                    <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4 border-2 border-accent-blue group-hover:scale-105 transition-transform">
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Player">
+                    </div>
+                    <span class="text-[10px] font-bold text-green-400 uppercase tracking-wider block mb-1">ROAMER / IGL</span>
+                    <h4 class="font-bold text-white text-lg group-hover:text-accent-blue transition-colors">STX • WARDEN</h4>
+                    <p class="text-text-muted text-xs mt-1">Yoga "Warden"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Division 3: Creators STX Brothers -->
+        <section class="glass-panel p-8 clip-edges border-accent-blue/30">
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-surface-border mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-mono font-bold text-purple-300 bg-purple-500/20 px-3 py-1 rounded border border-purple-500/40 uppercase">CONTENT CREATORS</span>
+                    <h2 class="text-3xl font-bold text-white mt-2">STX BROTHERS • CONTENT CREATOR SQUAD</h2>
+                    <p class="text-text-muted text-sm mt-1">Streamers, Video Creators, and PUBG Mobile Influencers</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold bg-white/10 px-3 py-1.5 rounded text-white border border-white/20">40+ TALENTS</span>
+                    <a href="https://tiktok.com/@official.spectranyx" target="_blank" class="btn-ghost text-xs py-2 px-4 clip-edges">TIKTOK CREATOR</a>
+                </div>
+            </div>
+
+            <!-- Creator Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-panel p-6 flex items-center gap-4 group hover:border-accent-glow transition-all">
+                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=200&auto=format&fit=crop" class="w-16 h-16 rounded-full object-cover border border-accent-blue" alt="Creator">
+                    <div>
+                        <span class="text-[10px] font-bold text-accent-glow uppercase">PUBGM STREAMER</span>
+                        <h4 class="font-bold text-white text-lg">STX • FOXGAMING</h4>
+                        <p class="text-text-muted text-xs">TikTok & YouTube Live</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 flex items-center gap-4 group hover:border-accent-glow transition-all">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200&auto=format&fit=crop" class="w-16 h-16 rounded-full object-cover border border-accent-blue" alt="Creator">
+                    <div>
+                        <span class="text-[10px] font-bold text-purple-300 uppercase">TIKTOK CREATOR</span>
+                        <h4 class="font-bold text-white text-lg">STX • VALKYRIE</h4>
+                        <p class="text-text-muted text-xs">Highlight Clips & Shorts</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 flex items-center gap-4 group hover:border-accent-glow transition-all">
+                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=200&auto=format&fit=crop" class="w-16 h-16 rounded-full object-cover border border-accent-blue" alt="Creator">
+                    <div>
+                        <span class="text-[10px] font-bold text-accent-blue uppercase">SHOUTCASTER</span>
+                        <h4 class="font-bold text-white text-lg">STX • ECHO</h4>
+                        <p class="text-text-muted text-xs">Tournament Caster & Host</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-base-dark border-t border-surface-border py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-text-muted">
+            <div class="flex items-center space-x-2">
+                <i class="ph-fill ph-hexagon text-2xl text-accent-blue"></i>
+                <span class="font-display font-bold tracking-widest text-white">STX<span class="text-accent-blue">.GG</span></span>
+            </div>
+            <p>© 2026 STX COMMUNITY. ALL RIGHTS RESERVED.</p>
+            <div class="flex space-x-6 text-lg">
+                <a id="foot-discord" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-discord-logo"></i></a>
+                <a id="foot-instagram" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-instagram-logo"></i></a>
+                <a id="foot-youtube" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-youtube-logo"></i></a>
+                <a id="foot-tiktok" href="#" target="_blank" class="hover:text-accent-glow"><i class="ph-bold ph-tiktok-logo"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function convertImageUrl(url) {
+            if (!url) return url;
+            const gdriveRegex = /drive\.google\.com\/file\/d\/([^\/]+)/;
+            const match = url.match(gdriveRegex);
+            if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+            const gdriveOpenRegex = /drive\.google\.com\/open\?id=([^\&]+)/;
+            const matchOpen = url.match(gdriveOpenRegex);
+            if (matchOpen && matchOpen[1]) return `https://drive.google.com/uc?export=view&id=${matchOpen[1]}`;
+            return url;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const closeBtn = document.getElementById('close-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) mobileBtn.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
+            if (closeBtn && mobileMenu) closeBtn.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
+
+            fetch('/api/data')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data) return;
+
+                    // Logo
+                    if (data.general && data.general.logoUrl) {
+                        const logoImg = document.getElementById('ui-logo-img');
+                        const logoText = document.getElementById('ui-logo-text');
+                        if (logoImg) {
+                            logoImg.src = convertImageUrl(data.general.logoUrl);
+                            logoImg.classList.remove('hidden');
+                        }
+                        if (logoText) logoText.classList.add('hidden');
+                    }
+
+                    // Socials
+                    if (data.general) {
+                        const g = data.general;
+                        if (g.discordUrl) document.getElementById('foot-discord').href = g.discordUrl;
+                        if (g.instagramUrl) document.getElementById('foot-instagram').href = g.instagramUrl;
+                        if (g.youtubeUrl) document.getElementById('foot-youtube').href = g.youtubeUrl;
+                        if (g.tiktokUrl) document.getElementById('foot-tiktok').href = g.tiktokUrl;
+                    }
+                })
+                .catch(e => console.error("Gagal load data roster:", e));
+        });
+    </script>
+</body>
+</html>
