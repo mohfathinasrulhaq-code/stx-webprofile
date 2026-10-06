@@ -1,0 +1,14 @@
+{
+  "name": "webprofile-stx",
+  "version": "1.0.0",
+  "description": "Cold-Tech Esports Style Community Web Profile",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npx @tailwindcss/cli -i ./css/style.css -o ./css/output.css --watch",
+    "build": "npx @tailwindcss/cli -i ./css/style.css -o ./css/output.css --minify"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "tailwindcss": "^4.0.0"
+  }
+}

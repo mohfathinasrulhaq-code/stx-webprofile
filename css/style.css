@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base-dark: #0A0D14;
+  --color-surface: #151921;
+  --color-surface-border: #2D3748;
+  --color-accent-blue: #0066FF;
+  --color-accent-glow: #00E5FF;
+  --color-text-main: #FFFFFF;
+  --color-text-muted: #9CA3AF;
+
+  --font-display: "Chakra Petch", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-pulse-glow: pulseGlow 2s infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px var(--color-accent-blue);
+  }
+
+  50% {
+    box-shadow: 0 0 30px var(--color-accent-glow);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-base-dark text-text-main font-body;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-wide uppercase;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-md border border-surface-border;
+  }
+
+  .glass-panel:hover {
+    @apply border-accent-blue/50 transition-colors duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-accent-blue text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:bg-accent-glow hover:shadow-[0_0_20px_rgba(0, 229, 255, 0.5)] active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply border border-surface-border text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:border-text-main hover:bg-white/5 active:scale-95;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px var(--color-accent-blue);
+  }
+
+  .clip-edges {
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-base-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-blue);
+}

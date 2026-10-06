@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STX Community | The Future of Esports</title>
+    <meta name="description" content="High-energy Community Web Profile. We are the future of community.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS v4 Browser (for development/instant preview) -->
+    <style type="text/tailwindcss">
+        @theme {
+          --color-base-dark: #0A0D14;
+          --color-surface: #151921;
+          --color-surface-border: #2D3748;
+          --color-accent-blue: #0066FF;
+          --color-accent-glow: #00E5FF;
+          --color-text-main: #FFFFFF;
+          --color-text-muted: #9CA3AF;
+        
+          --font-display: "Chakra Petch", sans-serif;
+          --font-body: "Inter", sans-serif;
+        
+          --animate-float: float 3s ease-in-out infinite;
+          --animate-pulse-glow: pulseGlow 2s infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 15px var(--color-accent-blue); }
+          50% { box-shadow: 0 0 30px var(--color-accent-glow); }
+        }
+        
+        @layer base {
+          body { @apply bg-base-dark text-text-main font-body; }
+          h1, h2, h3, h4, h5, h6 { @apply font-display tracking-wide uppercase; }
+        }
+        
+        @layer utilities {
+          .glass-panel { @apply bg-surface/80 backdrop-blur-md border border-surface-border; }
+          .glass-panel:hover { @apply border-accent-blue/50 transition-colors duration-300; }
+          .btn-primary { @apply bg-accent-blue text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:bg-accent-glow hover:shadow-[0_0_20px_rgba(0,229,255,0.5)] active:scale-95; }
+          .btn-ghost { @apply border border-surface-border text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:border-text-main hover:bg-white/5 active:scale-95; }
+          .text-glow { text-shadow: 0 0 10px var(--color-accent-blue); }
+          .clip-edges { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        }
+    </style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="relative">
+
+    <!-- Ambient Background Glow -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-accent-blue/10 rounded-full blur-[120px]">
+        </div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-accent-glow/10 rounded-full blur-[100px]">
+        </div>
+    </div>
+
+    <!-- Header / Nav -->
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-surface-border transition-all duration-300"
+        id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="window.location.href='index.html'">
+                    <img id="ui-logo-img" src="" class="h-10 hidden mr-2 object-contain" alt="Logo">
+                    <div id="ui-logo-text" class="flex items-center">
+                        <i class="ph-fill ph-hexagon text-4xl text-accent-blue group-hover:text-accent-glow transition-colors duration-300 mr-2 text-glow"></i>
+                        <span class="font-display font-bold text-2xl tracking-widest text-white group-hover:text-accent-glow transition-colors duration-300">STX<span class="text-accent-blue">.GG</span></span>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#home"
+                        class="text-sm font-medium text-white hover:text-accent-glow transition-colors">HOME</a>
+                    <a href="#divisions"
+                        class="text-sm font-medium text-text-muted hover:text-white transition-colors">DIVISIONS</a>
+                    <a href="#roster"
+                        class="text-sm font-medium text-text-muted hover:text-white transition-colors">ROSTER</a>
+                    <a href="#events"
+                        class="text-sm font-medium text-text-muted hover:text-white transition-colors">EVENTS</a>
+                    <a href="shop.html" class="text-sm font-medium text-text-muted hover:text-white transition-colors"
+                        target="_blank">SHOP</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="text-text-muted hover:text-white transition-colors">
+                        <span class="text-xs font-bold">ID</span> / <span class="text-xs">EN</span>
+                    </button>
+                    <button class="p-2 text-text-muted hover:text-white transition-colors" aria-label="Search">
+                        <i class="ph ph-magnifying-glass text-xl"></i>
+                    </button>
+                    <a href="#join" class="btn-primary clip-edges text-sm py-2">JOIN COMMUNITY</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-text-muted hover:text-white focus:outline-none">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Drawer (Hidden by default) -->
+    <div id="mobile-menu"
+        class="fixed inset-0 z-40 bg-base-dark/95 backdrop-blur-lg transform translate-x-full transition-transform duration-300 md:hidden flex flex-col justify-center items-center space-y-6">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white">
+            <i class="ph ph-x text-3xl"></i>
+        </button>
+        <a href="#home" class="text-2xl font-display font-bold text-white hover:text-accent-glow">HOME</a>
+        <a href="#divisions" class="text-2xl font-display font-bold text-white hover:text-accent-glow">DIVISIONS</a>
+        <a href="#roster" class="text-2xl font-display font-bold text-white hover:text-accent-glow">ROSTER</a>
+        <a href="#events" class="text-2xl font-display font-bold text-white hover:text-accent-glow">EVENTS</a>
+        <a href="shop.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow"
+            target="_blank">SHOP</a>
+        <a href="#join" class="btn-primary clip-edges mt-4">JOIN COMMUNITY</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-20 h-[85vh] flex items-center justify-center overflow-hidden">
+        <!-- Particle/Video Background Placeholder -->
+        <div
+            class="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-no-repeat opacity-30">
+        </div>
+        <div class="absolute inset-0 z-0 bg-gradient-to-t from-base-dark via-base-dark/80 to-transparent"></div>
+
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+            <div class="inline-block mb-4 px-3 py-1 glass-panel rounded-full border-accent-blue/30 animate-float">
+                <span id="ui-hero-tagline" class="text-xs font-bold text-accent-glow tracking-widest uppercase">The Next Evolution</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                <span id="ui-hero-headline-prefix">WE ARE THE</span> <span id="ui-hero-headline"
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-glow">FUTURE</span>
+                <span id="ui-hero-headline-suffix">OF COMMUNITY</span>
+            </h1>
+            <p id="ui-hero-sub" class="text-lg md:text-xl text-text-muted mb-10 max-w-2xl mx-auto">
+                Join the most dynamic esports and gaming community. Elevate your skills, connect with pros, and dominate
+                the digital arena together.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <a id="ui-hero-cta1" href="#join"
+                    class="btn-primary clip-edges w-full sm:w-auto text-center shadow-[0_0_15px_rgba(0,102,255,0.4)]">BECOME
+                    A MEMBER</a>
+                <a id="ui-hero-cta2" href="#divisions" class="btn-ghost clip-edges w-full sm:w-auto text-center">EXPLORE ROSTER</a>
+            </div>
+        </div>
+
+        <!-- Quick Stats Ticker -->
+        <div class="absolute bottom-0 w-full glass-panel border-x-0 py-4 z-10">
+            <div
+                class="max-w-7xl mx-auto px-4 flex justify-between items-center overflow-x-auto space-x-8 hide-scrollbar">
+                <div class="flex flex-col min-w-max">
+                    <span id="ui-stat-members" class="text-accent-glow font-display font-bold text-xl">15K+</span>
+                    <span class="text-xs text-text-muted uppercase tracking-wider">Total Members</span>
+                </div>
+                <div class="w-px h-8 bg-surface-border"></div>
+                <div class="flex flex-col min-w-max">
+                    <span id="ui-stat-divisions" class="text-white font-display font-bold text-xl">8</span>
+                    <span class="text-xs text-text-muted uppercase tracking-wider">Active Divisions</span>
+                </div>
+                <div class="w-px h-8 bg-surface-border"></div>
+                <div class="flex flex-col min-w-max">
+                    <span id="ui-stat-tournaments" class="text-white font-display font-bold text-xl">120+</span>
+                    <span class="text-xs text-text-muted uppercase tracking-wider">Tournaments</span>
+                </div>
+                <div class="w-px h-8 bg-surface-border"></div>
+                <div class="flex flex-col min-w-max">
+                    <span id="ui-stat-champs" class="text-accent-glow font-display font-bold text-xl">45</span>
+                    <span class="text-xs text-text-muted uppercase tracking-wider">Championships</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Divisions Section -->
+    <section id="divisions" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">OUR <span class="text-accent-blue">DIVISIONS</span></h2>
+                <p class="text-text-muted max-w-2xl mx-auto">Discover the elite squads and creative forces driving our
+                    community forward.</p>
+
+                <!-- Filter Tabs -->
+                <div id="ui-division-filters" class="flex flex-wrap justify-center gap-4 mt-8">
+                    <button
+                        class="px-6 py-2 glass-panel border-accent-blue text-white font-bold text-sm tracking-wide">ALL</button>
+                    <button
+                        class="px-6 py-2 glass-panel hover:border-accent-blue/50 text-text-muted hover:text-white transition-colors font-bold text-sm tracking-wide">ESPORTS</button>
+                    <button
+                        class="px-6 py-2 glass-panel hover:border-accent-blue/50 text-text-muted hover:text-white transition-colors font-bold text-sm tracking-wide">CREATORS</button>
+                    <button
+                        class="px-6 py-2 glass-panel hover:border-accent-blue/50 text-text-muted hover:text-white transition-colors font-bold text-sm tracking-wide">REGIONAL</button>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            <div id="ui-divisions-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="group relative overflow-hidden glass-panel clip-edges h-96 cursor-pointer">
+                    <div
+                        class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-base-dark via-base-dark/50 to-transparent"></div>
+
+                    <div class="absolute bottom-0 left-0 w-full p-6 transform transition-transform duration-300">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <h3
+                                    class="text-2xl font-bold text-white mb-1 group-hover:text-accent-glow transition-colors">
+                                    Delta Force Mobile </h3>
+                                <p class="text-sm text-text-muted">Pro Roaster • 35 Players Active</p>
+                            </div>
+                            <div
+                                class="bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1 rounded text-xs font-bold text-white">
+                                STX 2025
+                            </div>
+                        </div>
+                        <div
+                            class="mt-4 h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 group-hover:mt-6 transition-all duration-300">
+                            <button
+                                class="w-full bg-accent-blue/20 border border-accent-blue text-accent-glow py-2 font-bold text-sm hover:bg-accent-blue hover:text-white transition-colors">VIEW
+                                SQUAD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="group relative overflow-hidden glass-panel clip-edges h-96 cursor-pointer">
+                    <div
+                        class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?q=80&w=1974&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-base-dark via-base-dark/50 to-transparent"></div>
+
+                    <div class="absolute bottom-0 left-0 w-full p-6">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <h3
+                                    class="text-2xl font-bold text-white mb-1 group-hover:text-accent-glow transition-colors">
+                                    MOBILE LEGENDS</h3>
+                                <p class="text-sm text-text-muted">Squad • 12 Active</p>
+                            </div>
+                            <div
+                                class="bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1 rounded text-xs font-bold text-white">
+                                STX 2025
+                            </div>
+                        </div>
+                        <div
+                            class="mt-4 h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 group-hover:mt-6 transition-all duration-300">
+                            <button
+                                class="w-full bg-accent-blue/20 border border-accent-blue text-accent-glow py-2 font-bold text-sm hover:bg-accent-blue hover:text-white transition-colors">VIEW
+                                SQUAD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="group relative overflow-hidden glass-panel clip-edges h-96 cursor-pointer">
+                    <div
+                        class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-base-dark via-base-dark/50 to-transparent"></div>
+
+                    <div class="absolute bottom-0 left-0 w-full p-6">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <h3
+                                    class="text-2xl font-bold text-white mb-1 group-hover:text-accent-glow transition-colors">
+                                    CONTENT PUBG Mobile</h3>
+                                <p class="text-sm text-text-muted">Players • 40+ Active</p>
+                            </div>
+                            <div
+                                class="bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1 rounded text-xs font-bold text-white">
+                                STX BROTHERS
+                            </div>
+                        </div>
+                        <div
+                            class="mt-4 h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 group-hover:mt-6 transition-all duration-300">
+                            <button
+                                class="w-full bg-accent-blue/20 border border-accent-blue text-accent-glow py-2 font-bold text-sm hover:bg-accent-blue hover:text-white transition-colors">VIEW
+                                CREATORS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- News & Events Section -->
+    <section id="events" class="py-24 bg-surface/30 border-y border-surface-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+                <!-- Left: Latest News -->
+                <div class="lg:col-span-7">
+                    <div class="flex items-center justify-between mb-8">
+                        <h2 class="text-3xl font-bold">LATEST <span class="text-accent-blue">INTEL</span></h2>
+                        <a href="#"
+                            class="text-sm text-accent-glow hover:text-white transition-colors flex items-center">VIEW
+                            ALL <i class="ph ph-arrow-right ml-2"></i></a>
+                    </div>
+
+                    <!-- Featured Article -->
+                    <div id="ui-featured-news" class="glass-panel group cursor-pointer mb-6 overflow-hidden">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2165&auto=format&fit=crop"
+                                alt="News"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 bg-accent-blue text-white text-xs font-bold px-3 py-1">
+                                UPDATE</div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-text-muted text-xs mb-2">OCTOBER 5, 2026 • COMMUNITY</p>
+                            <h3
+                                class="text-2xl font-bold text-white group-hover:text-accent-glow transition-colors mb-3">
+                                STX SECURES CHAMPIONSHIP TITLE AT REGIONAL MAJORS</h3>
+                            <p class="text-text-muted text-sm line-clamp-2">The STX Valorant roster put on an absolute
+                                clinic in the grand finals, sweeping the opposition to claim the trophy.</p>
+                        </div>
+                    </div>
+
+                    <!-- Small List -->
+                    <div id="ui-news-list" class="space-y-4">
+                        <div
+                            class="flex gap-4 glass-panel p-4 group cursor-pointer hover:border-accent-blue/30 transition-colors">
+                            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"
+                                class="w-24 h-24 object-cover" alt="Thumb">
+                            <div>
+                                <p class="text-text-muted text-xs mb-1">OCTOBER 2, 2026</p>
+                                <h4 class="font-bold text-white group-hover:text-accent-blue transition-colors">New
+                                    Merchandise Drop: The Cyber Collection</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Upcoming Events -->
+                <div class="lg:col-span-5">
+                    <h2 class="text-3xl font-bold mb-8">UPCOMING <span class="text-accent-blue">BATTLES</span></h2>
+
+                    <div class="space-y-6">
+                        <!-- Event Card 1 -->
+                        <div id="ui-event-match" class="glass-panel p-6 border-l-4 border-l-accent-blue relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-accent-blue/10 p-4 rounded-bl-3xl">
+                                <i class="ph-fill ph-sword text-2xl text-accent-blue"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-white mb-2">STX vs CLOUD9</h4>
+                            <p class="text-sm text-text-muted mb-4">VCT Pacific League - Week 4</p>
+
+                            <!-- Countdown -->
+                            <div class="flex space-x-4 mb-6">
+                                <div class="text-center">
+                                    <div
+                                        class="bg-base-dark text-white font-display font-bold text-xl px-3 py-2 rounded">
+                                        02</div>
+                                    <div class="text-[10px] text-text-muted mt-1 uppercase">Days</div>
+                                </div>
+                                <div class="text-center">
+                                    <div
+                                        class="bg-base-dark text-white font-display font-bold text-xl px-3 py-2 rounded">
+                                        14</div>
+                                    <div class="text-[10px] text-text-muted mt-1 uppercase">Hours</div>
+                                </div>
+                                <div class="text-center">
+                                    <div
+                                        class="bg-base-dark text-accent-glow font-display font-bold text-xl px-3 py-2 rounded">
+                                        45</div>
+                                    <div class="text-[10px] text-text-muted mt-1 uppercase">Mins</div>
+                                </div>
+                            </div>
+
+                            <button class="w-full btn-ghost text-sm py-2">SET REMINDER</button>
+                        </div>
+
+                        <!-- Event Card 2 -->
+                        <div id="ui-event-community" class="glass-panel p-6 border-l-4 border-l-surface-border">
+                            <h4 class="text-xl font-bold text-white mb-2">Community Gathering V.4</h4>
+                            <p class="text-sm text-text-muted mb-4">Discord Online Event & Watch Party</p>
+                            <p class="text-xs text-accent-glow font-bold mb-4">OCT 10, 2026 • 20:00 GMT+7</p>
+                            <button class="w-full btn-primary text-sm py-2">RSVP NOW</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-surface-border pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand Info -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center mb-6 cursor-pointer" onclick="window.location.href='index.html'">
+                        <img id="ui-footer-logo-img" src="" class="h-10 hidden mr-2 object-contain" alt="Logo">
+                        <div id="ui-footer-logo-text" class="flex items-center">
+                            <i class="ph-fill ph-hexagon text-3xl text-accent-blue mr-2"></i>
+                            <span class="font-display font-bold text-2xl tracking-widest text-white">STX<span class="text-accent-blue">.GG</span></span>
+                        </div>
+                    </div>
+                    <p id="ui-footer-desc" class="text-text-muted text-sm mb-6">The premier destination for competitive gaming, content
+                        creation, and community building in Southeast Asia.</p>
+                    <!-- Socials -->
+                    <div class="flex space-x-4">
+                        <a id="ui-social-discord" href="#" target="_blank" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i
+                                class="ph-fill ph-discord-logo text-2xl"></i></a>
+                        <a id="ui-social-instagram" href="#" target="_blank" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i
+                                class="ph-fill ph-instagram-logo text-2xl"></i></a>
+                        <a id="ui-social-youtube" href="#" target="_blank" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i
+                                class="ph-fill ph-youtube-logo text-2xl"></i></a>
+                        <a id="ui-social-tiktok" href="#" target="_blank" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i
+                                class="ph-fill ph-tiktok-logo text-2xl"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">ORGANIZATION</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-white transition-colors">About Us</a>
+                        </li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-white transition-colors">Our Teams</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-sm text-text-muted hover:text-white transition-colors">Management</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-white transition-colors">Careers</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6">RESOURCES</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-white transition-colors">Brand
+                                Assets</a></li>
+                        <li><a href="#"
+                                class="text-sm text-text-muted hover:text-white transition-colors">Partnerships</a></li>
+                        <li><a href="shop.html" class="text-sm text-text-muted hover:text-white transition-colors"
+                                target="_blank">Shop / Merch</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-white transition-colors">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Sponsors Placeholder -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">OUR PARTNERS</h4>
+                    <div id="ui-partners-container" class="grid grid-cols-2 gap-4">
+                        <div
+                            class="h-12 bg-white/5 rounded flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <span class="text-text-muted text-xs font-bold">LUNATOPUP</span>
+                        </div>
+                        <div
+                            class="h-12 bg-white/5 rounded flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <span class="text-text-muted text-xs font-bold">GLITCH</span>
+                        </div>
+                        <div
+                            class="h-12 bg-white/5 rounded flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <span class="text-text-muted text-xs font-bold">NYX FAMILY</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-surface-border pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-xs text-text-muted mb-4 md:mb-0">© 2026 STX Community. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-xs text-text-muted hover:text-white">Privacy Policy</a>
+                    <a href="#" class="text-xs text-text-muted hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STX Community | Shop</title>
+    <meta name="description" content="Official Merchandise of STX Community.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS v4 Browser (for development/instant preview) -->
+    <style type="text/tailwindcss">
+        @theme {
+          --color-base-dark: #0A0D14;
+          --color-surface: #151921;
+          --color-surface-border: #2D3748;
+          --color-accent-blue: #0066FF;
+          --color-accent-glow: #00E5FF;
+          --color-text-main: #FFFFFF;
+          --color-text-muted: #9CA3AF;
+        
+          --font-display: "Chakra Petch", sans-serif;
+          --font-body: "Inter", sans-serif;
+        
+          --animate-float: float 3s ease-in-out infinite;
+          --animate-pulse-glow: pulseGlow 2s infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 15px var(--color-accent-blue); }
+          50% { box-shadow: 0 0 30px var(--color-accent-glow); }
+        }
+        
+        @layer base {
+          body { @apply bg-base-dark text-text-main font-body; }
+          h1, h2, h3, h4, h5, h6 { @apply font-display tracking-wide uppercase; }
+        }
+        
+        @layer utilities {
+          .glass-panel { @apply bg-surface/80 backdrop-blur-md border border-surface-border; }
+          .glass-panel:hover { @apply border-accent-blue/50 transition-colors duration-300; }
+          .btn-primary { @apply bg-accent-blue text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:bg-accent-glow hover:shadow-[0_0_20px_rgba(0,229,255,0.5)] active:scale-95; }
+          .btn-ghost { @apply border border-surface-border text-white px-6 py-3 font-display font-bold uppercase tracking-wider transition-all duration-300 hover:border-text-main hover:bg-white/5 active:scale-95; }
+          .text-glow { text-shadow: 0 0 10px var(--color-accent-blue); }
+          .clip-edges { clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+        }
+    </style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="relative">
+
+    <!-- Ambient Background Glow -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-accent-blue/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[30vw] h-[30vw] bg-accent-glow/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- Header / Nav -->
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-surface-border transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="window.location.href='index.html'">
+                    <img id="ui-logo-img" src="" class="h-10 hidden mr-2 object-contain" alt="Logo">
+                    <div id="ui-logo-text" class="flex items-center">
+                        <i class="ph-fill ph-hexagon text-4xl text-accent-blue group-hover:text-accent-glow transition-colors duration-300 mr-2 text-glow"></i>
+                        <span class="font-display font-bold text-2xl tracking-widest text-white group-hover:text-accent-glow transition-colors duration-300">STX<span class="text-accent-blue">.GG</span></span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html#home" class="text-sm font-medium text-text-muted hover:text-white transition-colors">HOME</a>
+                    <a href="index.html#divisions" class="text-sm font-medium text-text-muted hover:text-white transition-colors">DIVISIONS</a>
+                    <a href="index.html#roster" class="text-sm font-medium text-text-muted hover:text-white transition-colors">ROSTER</a>
+                    <a href="index.html#events" class="text-sm font-medium text-text-muted hover:text-white transition-colors">EVENTS</a>
+                    <a href="shop.html" class="text-sm font-medium text-white hover:text-accent-glow transition-colors">SHOP</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="text-text-muted hover:text-white transition-colors">
+                        <span class="text-xs font-bold">ID</span> / <span class="text-xs">EN</span>
+                    </button>
+                    <button class="p-2 text-text-muted hover:text-white transition-colors" aria-label="Search">
+                        <i class="ph ph-magnifying-glass text-xl"></i>
+                    </button>
+                    <a href="index.html#join" class="btn-primary clip-edges text-sm py-2">JOIN COMMUNITY</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-text-muted hover:text-white focus:outline-none">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Drawer (Hidden by default) -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-base-dark/95 backdrop-blur-lg transform translate-x-full transition-transform duration-300 md:hidden flex flex-col justify-center items-center space-y-6">
+        <button id="close-menu-btn" class="absolute top-6 right-6 text-white">
+            <i class="ph ph-x text-3xl"></i>
+        </button>
+        <a href="index.html#home" class="text-2xl font-display font-bold text-white hover:text-accent-glow">HOME</a>
+        <a href="index.html#divisions" class="text-2xl font-display font-bold text-white hover:text-accent-glow">DIVISIONS</a>
+        <a href="index.html#roster" class="text-2xl font-display font-bold text-white hover:text-accent-glow">ROSTER</a>
+        <a href="index.html#events" class="text-2xl font-display font-bold text-white hover:text-accent-glow">EVENTS</a>
+        <a href="shop.html" class="text-2xl font-display font-bold text-white hover:text-accent-glow">SHOP</a>
+        <a href="index.html#join" class="btn-primary clip-edges mt-4">JOIN COMMUNITY</a>
+    </div>
+
+    <!-- Shop Content -->
+    <div class="pt-20"> <!-- Spacer for fixed header -->
+        <section id="shop" class="py-24 relative bg-base-dark">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold mb-4">OFFICIAL <span class="text-accent-blue">MERCHANDISE</span></h2>
+                    <p class="text-text-muted max-w-2xl mx-auto">Dukung komunitas dengan membeli merchandise resmi kami.</p>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="ui-shop-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Product 1 -->
+                    <div class="glass-panel clip-edges flex flex-col relative overflow-hidden group">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=2000&auto=format&fit=crop" alt="STX Pro Jersey 2026" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-2">STX Pro Jersey 2026</h3>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-xl text-accent-glow font-bold">Rp 350.000</span>
+                                    <span class="text-xs text-text-muted">Est. Ongkir: Rp 20k - 50k</span>
+                                </div>
+                            </div>
+                            <button onclick="openPurchaseModal('STX Pro Jersey 2026', 350000)" class="w-full btn-primary text-sm py-3 mt-4">BELI SEKARANG</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Product 2 -->
+                    <div class="glass-panel clip-edges flex flex-col relative overflow-hidden group">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=2000&auto=format&fit=crop" alt="STX Classic Hoodie" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-2">STX Classic Hoodie</h3>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-xl text-accent-glow font-bold">Rp 450.000</span>
+                                    <span class="text-xs text-text-muted">Est. Ongkir: Rp 20k - 50k</span>
+                                </div>
+                            </div>
+                            <button onclick="openPurchaseModal('STX Classic Hoodie', 450000)" class="w-full btn-primary text-sm py-3 mt-4">BELI SEKARANG</button>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="glass-panel clip-edges flex flex-col relative overflow-hidden group">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1512756290469-ec264b7fbf87?q=80&w=2000&auto=format&fit=crop" alt="STX Gaming Mousepad" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-2">STX Gaming Mousepad</h3>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-xl text-accent-glow font-bold">Rp 200.000</span>
+                                    <span class="text-xs text-text-muted">Est. Ongkir: Rp 15k - 35k</span>
+                                </div>
+                            </div>
+                            <button onclick="openPurchaseModal('STX Gaming Mousepad', 200000)" class="w-full btn-primary text-sm py-3 mt-4">BELI SEKARANG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div id="purchase-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-base-dark/90 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0">
+        <div class="glass-panel border-accent-blue/50 p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300 relative">
+            <button onclick="closePurchaseModal()" class="absolute top-4 right-4 text-text-muted hover:text-white">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+            <h3 class="text-2xl font-bold text-white mb-2">Form Pembelian</h3>
+            <p id="modal-product-name" class="text-accent-glow font-bold mb-6">Nama Produk</p>
+            
+            <form id="purchase-form" class="space-y-4">
+                <input type="hidden" id="product-name-input">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Nama Penerima</label>
+                    <input type="text" id="buyer-name" required class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Nomor HP / WhatsApp</label>
+                    <input type="tel" id="buyer-phone" required class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Alamat Lengkap Pengiriman</label>
+                    <textarea id="buyer-address" required rows="3" class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors placeholder-text-muted/50" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Nomor Rekening Anda (Pengirim)</label>
+                    <input type="text" id="buyer-account" required class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors" placeholder="Contoh: BCA - 1234567890 (A/N Nama)">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Metode Pembayaran</label>
+                    <select id="payment-method" required class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors appearance-none">
+                        <option value="">Pilih Metode Pembayaran (Tujuan)</option>
+                    </select>
+                </div>
+                
+                <div class="pt-4 border-t border-surface-border mt-6">
+                    <button type="submit" class="w-full btn-primary text-sm py-3">PROSES PESANAN KE EMAIL</button>
+                    <p class="text-[10px] text-text-muted text-center mt-3">Data pesanan akan diformat dan dikirim otomatis ke email Admin melalui aplikasi Mail Anda. Harap sertakan bukti transfer pada email tersebut.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-surface-border pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand Info -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center mb-6 cursor-pointer" onclick="window.location.href='index.html'">
+                        <img id="ui-footer-logo-img" src="" class="h-10 hidden mr-2 object-contain" alt="Logo">
+                        <div id="ui-footer-logo-text" class="flex items-center">
+                            <i class="ph-fill ph-hexagon text-3xl text-accent-blue mr-2"></i>
+                            <span class="font-display font-bold text-2xl tracking-widest text-white">STX<span class="text-accent-blue">.GG</span></span>
+                        </div>
+                    </div>
+                    <p class="text-text-muted text-sm mb-6">The premier destination for competitive gaming, content creation, and community building in Southeast Asia.</p>
+                    <!-- Socials -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i class="ph-fill ph-discord-logo text-2xl"></i></a>
+                        <a href="#" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i class="ph-fill ph-instagram-logo text-2xl"></i></a>
+                        <a href="#" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i class="ph-fill ph-youtube-logo text-2xl"></i></a>
+                        <a href="#" class="text-text-muted hover:text-accent-glow hover:scale-110 transition-all"><i class="ph-fill ph-tiktok-logo text-2xl"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">ORGANIZATION</h4>
+                    <ul class="space-y-3">
+                        <li><a href="index.html#about" class="text-sm text-text-muted hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="index.html#divisions" class="text-sm text-text-muted hover:text-white transition-colors">Our Teams</a></li>
+                        <li><a href="index.html#management" class="text-sm text-text-muted hover:text-white transition-colors">Management</a></li>
+                        <li><a href="index.html#careers" class="text-sm text-text-muted hover:text-white transition-colors">Careers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6">RESOURCES</h4>
+                    <ul class="space-y-3">
+                        <li><a href="index.html#assets" class="text-sm text-text-muted hover:text-white transition-colors">Brand Assets</a></li>
+                        <li><a href="index.html#partnerships" class="text-sm text-text-muted hover:text-white transition-colors">Partnerships</a></li>
+                        <li><a href="shop.html" class="text-sm text-text-muted hover:text-white transition-colors">Shop / Merch</a></li>
+                        <li><a href="index.html#contact" class="text-sm text-text-muted hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Sponsors Placeholder -->
+                <div>
+                    <h4 class="text-white font-bold mb-6">OUR PARTNERS</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="h-12 bg-white/5 rounded flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <span class="text-text-muted text-xs font-bold">LOGITECH G</span>
+                        </div>
+                        <div class="h-12 bg-white/5 rounded flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <span class="text-text-muted text-xs font-bold">INTEL</span>
+                        </div>
+                        <div class="h-12 bg-white/5 rounded flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <span class="text-text-muted text-xs font-bold">SECRETSTAR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-surface-border pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-xs text-text-muted mb-4 md:mb-0">© 2026 STX Community. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-xs text-text-muted hover:text-white">Privacy Policy</a>
+                    <a href="#" class="text-xs text-text-muted hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="./js/app.js"></script>
+</body>
+</html>

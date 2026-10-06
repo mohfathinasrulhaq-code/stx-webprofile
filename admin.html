@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STX Admin Dashboard | Website Management System</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS v4 Browser -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+          --color-base-dark: #0A0D14;
+          --color-surface: #151921;
+          --color-surface-hover: #1E2430;
+          --color-surface-border: #2D3748;
+          --color-accent-blue: #0066FF;
+          --color-accent-glow: #00E5FF;
+          --color-text-main: #FFFFFF;
+          --color-text-muted: #9CA3AF;
+          --font-display: "Chakra Petch", sans-serif;
+          --font-body: "Inter", sans-serif;
+        }
+        @layer base {
+          body { @apply bg-base-dark text-text-main font-body selection:bg-accent-blue selection:text-white; }
+          h1, h2, h3, h4, h5, h6 { @apply font-display tracking-wide uppercase; }
+        }
+        @layer utilities {
+          .glass-panel { @apply bg-surface/80 backdrop-blur-md border border-surface-border; }
+          .glass-panel-hover { @apply hover:border-accent-blue/50 transition-all duration-200; }
+          .btn-primary { @apply bg-accent-blue text-white px-5 py-2.5 font-display font-bold uppercase tracking-wider hover:bg-accent-glow hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed; }
+          .btn-secondary { @apply bg-white/5 border border-surface-border text-white px-4 py-2 font-display font-bold uppercase tracking-wider hover:bg-white/10 hover:border-accent-blue/40 transition-all active:scale-95 cursor-pointer; }
+          .btn-danger { @apply bg-red-500/20 border border-red-500/50 text-red-400 px-4 py-2 font-display font-bold uppercase hover:bg-red-500 hover:text-white transition-all active:scale-95 cursor-pointer; }
+          .input-field { @apply w-full bg-base-dark/80 border border-surface-border p-3 text-white focus:border-accent-blue focus:ring-1 focus:ring-accent-blue outline-none transition-all rounded-sm placeholder:text-text-muted/40; }
+          .clip-edges { clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0A0D14; }
+        ::-webkit-scrollbar-thumb { background: #2D3748; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0066FF; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col relative">
+
+    <!-- Ambient Glow Background -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-accent-blue/10 rounded-full blur-[140px]"></div>
+        <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-accent-glow/10 rounded-full blur-[140px]"></div>
+    </div>
+
+    <!-- Login Modal / Screen (Shown when unauthenticated) -->
+    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-base-dark/95 backdrop-blur-md transition-opacity duration-300">
+        <div class="glass-panel max-w-md w-full mx-4 p-8 relative overflow-hidden border-accent-blue/40 shadow-[0_0_50px_rgba(0,102,255,0.2)]">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-blue to-accent-glow"></div>
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-blue/10 border border-accent-blue/30 text-accent-glow mb-4">
+                    <i class="ph-bold ph-shield-check text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-widest text-white">STX<span class="text-accent-blue">.ADMIN</span></h2>
+                <p class="text-text-muted text-xs mt-1">Sistem Kontrol & Pembaruan Website</p>
+            </div>
+            
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Password Admin</label>
+                    <div class="relative">
+                        <input type="password" id="login-password-input" class="input-field pr-10 font-mono" placeholder="Masukkan password admin..." required autofocus>
+                        <button type="button" id="toggle-login-pass" class="absolute right-3 top-3 text-text-muted hover:text-white" tabindex="-1">
+                            <i class="ph ph-eye text-xl"></i>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-text-muted mt-2 italic">*Default password baru: <span class="text-accent-glow font-bold font-mono">admin</span></p>
+                </div>
+                <div id="login-error-msg" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/30 p-2.5 rounded flex items-center gap-2">
+                    <i class="ph-bold ph-warning-circle text-base flex-shrink-0"></i>
+                    <span id="login-error-text">Password salah! Silakan coba lagi.</span>
+                </div>
+                <button type="submit" id="login-submit-btn" class="w-full btn-primary clip-edges py-3 text-sm flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-sign-in text-lg"></i> MASUK KE DASHBOARD
+                </button>
+            </form>
+            <div class="mt-6 text-center">
+                <a href="index.html" class="text-xs text-text-muted hover:text-accent-glow transition-colors inline-flex items-center gap-1">
+                    <i class="ph ph-arrow-left"></i> Kembali ke Website Utama
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Navigation Header -->
+    <header class="glass-panel border-b border-surface-border px-6 py-3.5 flex items-center justify-between z-20 flex-shrink-0">
+        <div class="flex items-center space-x-4">
+            <button id="mobile-sidebar-toggle" class="md:hidden text-text-muted hover:text-white p-1">
+                <i class="ph ph-list text-2xl"></i>
+            </button>
+            <div class="flex items-center cursor-pointer" onclick="window.location.reload()">
+                <img id="admin-logo-img" src="" class="h-8 hidden mr-2 object-contain" alt="Logo">
+                <i id="admin-logo-icon" class="ph-fill ph-hexagon text-2xl text-accent-blue mr-2 text-glow"></i>
+                <span id="admin-logo-text" class="font-display font-bold text-xl tracking-wider text-white">STX<span class="text-accent-blue">.ADMIN</span></span>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded bg-white/5 border border-surface-border text-xs text-text-muted">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span>Live Mode</span>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <span id="sync-status" class="text-xs text-text-muted hidden md:inline-flex items-center gap-1.5 mr-2">
+                <i class="ph ph-check text-green-400"></i> Sinkron dengan Server
+            </span>
+            <a href="index.html" target="_blank" class="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5" title="Buka website di tab baru">
+                <i class="ph ph-arrow-square-out text-base"></i> <span class="hidden sm:inline">Lihat Web</span>
+            </a>
+            <button id="save-all-btn" class="btn-primary clip-edges text-xs py-2 px-4 flex items-center gap-2 shadow-[0_0_15px_rgba(0,102,255,0.3)]">
+                <i class="ph-bold ph-floppy-disk text-base"></i> SIMPAN PERUBAHAN
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container: Sidebar + Content -->
+    <div class="flex-1 flex overflow-hidden relative z-10">
+
+        <!-- Sidebar Navigation -->
+        <aside id="admin-sidebar" class="w-64 glass-panel border-r border-surface-border flex flex-col flex-shrink-0 transition-transform duration-300 md:translate-x-0 -translate-x-full md:static fixed inset-y-0 left-0 z-30 pt-16 md:pt-0">
+            <div class="p-4 border-b border-surface-border/50">
+                <p class="text-[11px] font-bold text-text-muted uppercase tracking-widest">NAVIGASI PENGELOLAAN</p>
+            </div>
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+                <button data-tab="tab-hero" class="nav-tab-btn active w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors">
+                    <i class="ph ph-browser text-lg text-accent-blue"></i> Hero & Banner
+                </button>
+                <button data-tab="tab-stats" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-chart-bar text-lg text-accent-glow"></i> Statistik
+                </button>
+                <button data-tab="tab-divisions" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-game-controller text-lg text-purple-400"></i> Divisi & Squad
+                </button>
+                <button data-tab="tab-news" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-newspaper text-lg text-yellow-400"></i> Berita & Intel
+                </button>
+                <button data-tab="tab-events" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-sword text-lg text-red-400"></i> Jadwal & Battles
+                </button>
+                <button data-tab="tab-shop" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-shopping-bag text-lg text-emerald-400"></i> Produk Shop
+                </button>
+                <button data-tab="tab-general" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-share-network text-lg text-cyan-400"></i> Sosial & Kontak
+                </button>
+                <button data-tab="tab-security" class="nav-tab-btn w-full text-left px-3 py-2.5 rounded font-display text-sm font-semibold flex items-center gap-3 transition-colors text-text-muted hover:text-white hover:bg-surface-hover">
+                    <i class="ph ph-lock-key text-lg text-orange-400"></i> Keamanan & Akun
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-3 border-t border-surface-border/60 space-y-1 bg-surface/50">
+                <a href="shop.html" target="_blank" class="w-full block text-left px-3 py-2 rounded text-xs text-text-muted hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
+                    <i class="ph ph-storefront text-base"></i> Buka Halaman Shop
+                </a>
+                <button id="admin-logout-btn" class="w-full text-left px-3 py-2 rounded text-xs text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-2">
+                    <i class="ph ph-sign-out text-base"></i> Keluar (Logout)
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 lg:p-10 overflow-y-auto">
+            <div class="max-w-5xl mx-auto space-y-8 pb-16">
+
+                <!-- Toast Alert Notification -->
+                <div id="toast-alert" class="hidden p-4 glass-panel flex items-center justify-between border-l-4 transition-all duration-300">
+                    <div class="flex items-center gap-3">
+                        <i id="toast-icon" class="ph-fill ph-check-circle text-2xl text-green-400"></i>
+                        <span id="toast-text" class="text-sm font-semibold">Perubahan berhasil disimpan!</span>
+                    </div>
+                    <button onclick="hideToast()" class="text-text-muted hover:text-white"><i class="ph ph-x text-lg"></i></button>
+                </div>
+
+                <!-- TAB 1: HERO & BANNER UTAMA -->
+                <section id="tab-hero" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-surface-border pb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold flex items-center gap-2">
+                                <i class="ph ph-browser text-accent-blue"></i> Hero & Banner Utama
+                            </h2>
+                            <p class="text-text-muted text-xs mt-1">Ubah judul utama, tagline, dan tombol ajakan bertindak (CTA) pada halaman beranda.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Tagline Badge Atas</label>
+                                <input type="text" id="hero-tagline" class="input-field" placeholder="Contoh: The Next Evolution">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Headline Highlight (Warna Gradien)</label>
+                                <input type="text" id="hero-headline-highlight" class="input-field text-accent-glow font-bold" placeholder="Contoh: FUTURE">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Headline Awalan</label>
+                                <input type="text" id="hero-headline-prefix" class="input-field" placeholder="Contoh: WE ARE THE">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Headline Akhiran</label>
+                                <input type="text" id="hero-headline-suffix" class="input-field" placeholder="Contoh: OF COMMUNITY">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Deskripsi Sub-Headline</label>
+                            <textarea id="hero-sub" rows="3" class="input-field" placeholder="Tuliskan deskripsi ringkas tentang komunitas STX..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-surface-border/50">
+                            <!-- CTA 1 -->
+                            <div class="space-y-3 bg-base-dark/50 p-4 border border-surface-border/70 rounded">
+                                <span class="text-xs font-bold text-accent-blue uppercase tracking-wider block">Tombol CTA 1 (Primary)</span>
+                                <div>
+                                    <label class="block text-[11px] text-text-muted mb-1">Teks Tombol</label>
+                                    <input type="text" id="hero-cta1-text" class="input-field text-sm" placeholder="Contoh: BECOME A MEMBER">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-text-muted mb-1">Link Target</label>
+                                    <input type="text" id="hero-cta1-link" class="input-field text-sm font-mono" placeholder="Contoh: #join atau https://discord.gg/stx">
+                                </div>
+                            </div>
+                            <!-- CTA 2 -->
+                            <div class="space-y-3 bg-base-dark/50 p-4 border border-surface-border/70 rounded">
+                                <span class="text-xs font-bold text-accent-glow uppercase tracking-wider block">Tombol CTA 2 (Ghost/Secondary)</span>
+                                <div>
+                                    <label class="block text-[11px] text-text-muted mb-1">Teks Tombol</label>
+                                    <input type="text" id="hero-cta2-text" class="input-field text-sm" placeholder="Contoh: EXPLORE ROSTER">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-text-muted mb-1">Link Target</label>
+                                    <input type="text" id="hero-cta2-link" class="input-field text-sm font-mono" placeholder="Contoh: #divisions">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: STATISTIK KOMUNITAS -->
+                <section id="tab-stats" class="tab-content hidden space-y-6">
+                    <div class="flex items-center justify-between border-b border-surface-border pb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold flex items-center gap-2">
+                                <i class="ph ph-chart-bar text-accent-glow"></i> Statistik Komunitas
+                            </h2>
+                            <p class="text-text-muted text-xs mt-1">Angka pencapaian yang tampil pada bar ticker beranda website.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 border-l-4 border-l-accent-glow">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Total Members</label>
+                            <input type="text" id="stat-members" class="input-field font-display text-2xl font-bold text-accent-glow" placeholder="15K+">
+                            <span class="text-[11px] text-text-muted mt-1 block">Jumlah anggota komunitas yang terdaftar.</span>
+                        </div>
+                        <div class="glass-panel p-5 border-l-4 border-l-accent-blue">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Active Divisions</label>
+                            <input type="text" id="stat-divisions" class="input-field font-display text-2xl font-bold text-white" placeholder="8">
+                            <span class="text-[11px] text-text-muted mt-1 block">Jumlah divisi game aktif saat ini.</span>
+                        </div>
+                        <div class="glass-panel p-5 border-l-4 border-l-purple-500">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Tournaments</label>
+                            <input type="text" id="stat-tournaments" class="input-field font-display text-2xl font-bold text-white" placeholder="120+">
+                            <span class="text-[11px] text-text-muted mt-1 block">Total turnamen yang diikuti / diselenggarakan.</span>
+                        </div>
+                        <div class="glass-panel p-5 border-l-4 border-l-yellow-400">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Championships</label>
+                            <input type="text" id="stat-champs" class="input-field font-display text-2xl font-bold text-yellow-400" placeholder="45">
+                            <span class="text-[11px] text-text-muted mt-1 block">Gelar juara dan piala kejuaraan.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: DIVISI & SQUAD GAME -->
+                <section id="tab-divisions" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-border pb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold flex items-center gap-2">
+                                <i class="ph ph-game-controller text-purple-400"></i> Divisi & Squad Game
+                            </h2>
+                            <p class="text-text-muted text-xs mt-1">Kelola daftar divisi squad game (Delta Force, Mobile Legends, PUBG, dll).</p>
+                        </div>
+                        <button id="add-division-btn" class="btn-primary clip-edges text-xs py-2 px-3 flex items-center gap-2 self-start sm:self-auto">
+                            <i class="ph-bold ph-plus text-base"></i> TAMBAH DIVISI BARU
+                        </button>
+                    </div>
+
+                    <!-- Division List Container -->
+                    <div id="divisions-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Injected by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- TAB 4: BERITA & INTEL KOMUNITAS -->
+                <section id="tab-news" class="tab-content hidden space-y-8">
+                    <div class="border-b border-surface-border pb-4">
+                        <h2 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="ph ph-newspaper text-yellow-400"></i> Berita & Intel Komunitas
+                        </h2>
+                        <p class="text-text-muted text-xs mt-1">Kelola artikel utama (featured) dan daftar pengumuman komunitas.</p>
+                    </div>
+
+                    <!-- Featured News Card -->
+                    <div class="glass-panel p-6 space-y-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-accent-blue"></div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-accent-glow uppercase tracking-wider flex items-center gap-2">
+                                <i class="ph ph-star text-lg"></i> Artikel Unggulan (Featured News)
+                            </span>
+                            <span class="text-xs bg-accent-blue/20 text-accent-blue px-2.5 py-1 rounded font-bold">HERO ARTICLE</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Tag Badge</label>
+                                <input type="text" id="news-feat-tag" class="input-field" placeholder="Contoh: UPDATE atau RECRUITMENT">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Kategori</label>
+                                <input type="text" id="news-feat-category" class="input-field" placeholder="Contoh: COMMUNITY atau ESPORTS">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Tanggal Rilis</label>
+                                <input type="text" id="news-feat-date" class="input-field" placeholder="Contoh: OCTOBER 5, 2026">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Judul Artikel Utama</label>
+                            <input type="text" id="news-feat-title" class="input-field font-bold text-lg" placeholder="Judul artikel utama...">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Ringkasan / Excerpt Berita</label>
+                            <textarea id="news-feat-summary" rows="3" class="input-field" placeholder="Tuliskan ringkasan berita..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">URL Gambar Header</label>
+                                <input type="text" id="news-feat-image" class="input-field text-sm font-mono" placeholder="https://images.unsplash.com/...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Link Artikel / Baca Selengkapnya</label>
+                                <input type="text" id="news-feat-link" class="input-field text-sm font-mono" placeholder="# atau https://...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regular Articles List -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <i class="ph ph-list-dashes text-accent-blue"></i> Daftar Berita Lainnya
+                            </h3>
+                            <button id="add-article-btn" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+                                <i class="ph-bold ph-plus text-sm"></i> Tambah Berita
+                            </button>
+                        </div>
+                        <div id="articles-list-container" class="space-y-3">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: JADWAL & BATTLE EVENTS -->
+                <section id="tab-events" class="tab-content hidden space-y-6">
+                    <div class="border-b border-surface-border pb-4">
+                        <h2 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="ph ph-sword text-red-400"></i> Jadwal Pertandingan & Acara
+                        </h2>
+                        <p class="text-text-muted text-xs mt-1">Ubah lawan tanding, turnamen, countdown timer, dan event gathering komunitas.</p>
+                    </div>
+
+                    <!-- Match Battle Card -->
+                    <div class="glass-panel p-6 space-y-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-accent-blue"></div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-accent-glow uppercase tracking-wider flex items-center gap-2">
+                                <i class="ph-fill ph-sword text-lg text-accent-blue"></i> Jadwal Pertandingan (Upcoming Battle)
+                            </span>
+                            <span class="text-xs bg-accent-blue/20 text-accent-glow px-2.5 py-1 rounded font-bold">LIVE COUNTDOWN</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Match / Lawan</label>
+                                <input type="text" id="event-match-opponent" class="input-field font-bold" placeholder="Contoh: STX vs CLOUD9">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Nama Turnamen / Liga</label>
+                                <input type="text" id="event-match-league" class="input-field" placeholder="Contoh: VCT Pacific League - Week 4">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Target Tanggal & Jam (Countdown)</label>
+                                <input type="datetime-local" id="event-match-target-date" class="input-field text-sm font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Teks Tombol</label>
+                                <input type="text" id="event-match-btn-text" class="input-field text-sm" placeholder="Contoh: SET REMINDER">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Link Tombol</label>
+                                <input type="text" id="event-match-btn-link" class="input-field text-sm font-mono" placeholder="# atau https://youtube.com/live">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Community Gathering Card -->
+                    <div class="glass-panel p-6 space-y-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-surface-border"></div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                <i class="ph ph-users-three text-lg text-accent-glow"></i> Event Komunitas (Community Gathering)
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Judul Event</label>
+                                <input type="text" id="event-comm-title" class="input-field font-bold" placeholder="Contoh: Community Gathering V.4">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Deskripsi / Format Event</label>
+                                <input type="text" id="event-comm-sub" class="input-field" placeholder="Contoh: Discord Online Event & Watch Party">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Teks Jadwal Tampil</label>
+                                <input type="text" id="event-comm-schedule" class="input-field text-sm text-accent-glow font-bold" placeholder="OCT 10, 2026 • 20:00 GMT+7">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Teks Tombol</label>
+                                <input type="text" id="event-comm-btn-text" class="input-field text-sm" placeholder="Contoh: RSVP NOW">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Link Tombol (Discord / Link RSVP)</label>
+                                <input type="text" id="event-comm-btn-link" class="input-field text-sm font-mono" placeholder="https://discord.gg/stx">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: PRODUK SHOP (MERCHANDISE) -->
+                <section id="tab-shop" class="tab-content hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-border pb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold flex items-center gap-2">
+                                <i class="ph ph-shopping-bag text-emerald-400"></i> Katalog Produk Merchandise
+                            </h2>
+                            <p class="text-text-muted text-xs mt-1">Kelola katalog merchandise yang tampil di halaman <a href="shop.html" target="_blank" class="text-accent-glow underline">shop.html</a>.</p>
+                        </div>
+                        <button id="add-product-btn" class="btn-primary clip-edges text-xs py-2 px-3 flex items-center gap-2 self-start sm:self-auto">
+                            <i class="ph-bold ph-plus text-base"></i> TAMBAH PRODUK BARU
+                        </button>
+                    </div>
+
+                    <!-- Products Grid Container -->
+                    <div id="products-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Injected by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- TAB 7: SOSIAL & KONTAK WEBSITE -->
+                <section id="tab-general" class="tab-content hidden space-y-8">
+                    <div class="border-b border-surface-border pb-4">
+                        <h2 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="ph ph-share-network text-cyan-400"></i> Sosial Media & Kontak Website
+                        </h2>
+                        <p class="text-text-muted text-xs mt-1">Ubah tautan media sosial resmi, email admin penerima pesanan, dan mitra sponsor.</p>
+                    </div>
+
+                    <!-- Social Links & Email -->
+                    <div class="glass-panel p-6 space-y-5">
+                        <h3 class="text-base font-bold flex items-center gap-2 text-white">
+                            <i class="ph ph-link-simple text-accent-blue"></i> Tautan Media Sosial & Notifikasi
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                    <i class="ph-fill ph-discord-logo text-accent-glow mr-1"></i> Discord Invite URL
+                                </label>
+                                <input type="text" id="gen-discord" class="input-field text-sm font-mono" placeholder="https://discord.gg/stx">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                    <i class="ph-fill ph-instagram-logo text-pink-400 mr-1"></i> Instagram URL
+                                </label>
+                                <input type="text" id="gen-instagram" class="input-field text-sm font-mono" placeholder="https://instagram.com/stxcommunity">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                    <i class="ph-fill ph-youtube-logo text-red-500 mr-1"></i> YouTube Channel URL
+                                </label>
+                                <input type="text" id="gen-youtube" class="input-field text-sm font-mono" placeholder="https://youtube.com/@stxcommunity">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                    <i class="ph-fill ph-tiktok-logo text-cyan-300 mr-1"></i> TikTok URL
+                                </label>
+                                <input type="text" id="gen-tiktok" class="input-field text-sm font-mono" placeholder="https://tiktok.com/@stxcommunity">
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-surface-border/50">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                <i class="ph-fill ph-image text-accent-blue mr-1"></i> URL Logo Website (Google Drive / Direct Link)
+                            </label>
+                            <input type="text" id="gen-logo" class="input-field text-sm font-mono" placeholder="Kosongkan untuk pakai teks bawaan...">
+                            <p class="text-[11px] text-text-muted mt-1">Bisa pakai link share Google Drive. Kosongkan untuk pakai logo bawaan.</p>
+                        </div>
+
+                        <div class="pt-2 border-t border-surface-border/50">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                <i class="ph-fill ph-envelope text-accent-blue mr-1"></i> Email Admin Komunitas (Tujuan Notifikasi Form Pesanan Shop)
+                            </label>
+                            <input type="email" id="gen-admin-email" class="input-field text-sm font-mono text-accent-glow" placeholder="admin@stxcommunity.com">
+                            <p class="text-[11px] text-text-muted mt-1">Ketika pengunjung checkout merchandise di halaman shop, email pesanan akan diarahkan ke email ini.</p>
+                        </div>
+                        
+                        <div class="pt-2 border-t border-surface-border/50">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                <i class="ph-fill ph-bank text-accent-blue mr-1"></i> Nomor Rekening / E-Wallet (Pisahkan dengan koma)
+                            </label>
+                            <input type="text" id="gen-bank-accounts" class="input-field text-sm" placeholder="Contoh: BCA 123456 a.n STX, Dana 08123 a.n STX">
+                            <p class="text-[11px] text-text-muted mt-1">Akan muncul sebagai pilihan metode pembayaran di halaman Shop.</p>
+                        </div>
+                        
+                        <div class="pt-2 border-t border-surface-border/50">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">
+                                <i class="ph-fill ph-file-text text-accent-blue mr-1"></i> Susunan Pesan Email Checkout (Template)
+                            </label>
+                            <textarea id="gen-email-template" rows="5" class="input-field text-sm font-mono" placeholder="Gunakan tag: {product}, {buyerName}, {buyerPhone}, {buyerAddress}, {buyerAccount}, {paymentMethod}"></textarea>
+                            <p class="text-[11px] text-text-muted mt-1">Kosongkan untuk menggunakan template bawaan. Gunakan tag di atas agar otomatis terisi data pembeli.</p>
+                        </div>
+
+                        <div class="pt-2 border-t border-surface-border/50">
+                            <label class="block text-xs font-bold text-text-muted uppercase mb-1">Deskripsi Footer Komunitas</label>
+                            <textarea id="gen-footer-desc" rows="2" class="input-field text-sm" placeholder="The premier destination for competitive gaming..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Partners / Sponsors -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <i class="ph ph-handshake text-accent-glow"></i> Mitra Sponsor & Partners
+                            </h3>
+                            <button id="add-partner-btn" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+                                <i class="ph-bold ph-plus text-sm"></i> Tambah Mitra
+                            </button>
+                        </div>
+                        <div id="partners-list-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 8: KEAMANAN & AKUN ADMIN -->
+                <section id="tab-security" class="tab-content hidden space-y-6">
+                    <div class="border-b border-surface-border pb-4">
+                        <h2 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="ph ph-lock-key text-orange-400"></i> Keamanan & Akun Admin
+                        </h2>
+                        <p class="text-text-muted text-xs mt-1">Perbarui password akses dashboard atau reset konfigurasi data website.</p>
+                    </div>
+
+                    <!-- Change Password Form -->
+                    <div class="glass-panel p-6 space-y-5 max-w-xl">
+                        <h3 class="text-base font-bold flex items-center gap-2 text-white">
+                            <i class="ph ph-key text-accent-glow"></i> Ganti Password Admin
+                        </h3>
+
+                        <form id="change-pass-form" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Password Lama Saat Ini</label>
+                                <input type="password" id="old-pass-input" class="input-field text-sm font-mono" placeholder="Masukkan password saat ini..." required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Password Baru</label>
+                                <input type="password" id="new-pass-input" class="input-field text-sm font-mono" placeholder="Minimal 4 karakter..." required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-text-muted uppercase mb-1.5">Ulangi Password Baru</label>
+                                <input type="password" id="confirm-pass-input" class="input-field text-sm font-mono" placeholder="Konfirmasi password baru..." required>
+                            </div>
+                            <button type="submit" class="btn-primary clip-edges text-xs py-2.5 px-5 flex items-center gap-2">
+                                <i class="ph-bold ph-check text-base"></i> PERBARUI PASSWORD
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Reset Website Data (Danger Zone) -->
+                    <div class="glass-panel p-6 border border-red-500/30 max-w-xl space-y-4">
+                        <h3 class="text-base font-bold flex items-center gap-2 text-red-400">
+                            <i class="ph ph-warning text-xl"></i> Reset Data Website ke Default
+                        </h3>
+                        <p class="text-xs text-text-muted leading-relaxed">
+                            Tindakan ini akan mengembalikan seluruh teks, statistik, divisi squad, berita, jadwal, dan katalog produk ke template awal bawaan STX Community.
+                        </p>
+                        <button id="reset-default-btn" class="btn-danger text-xs py-2 px-4 flex items-center gap-2">
+                            <i class="ph-bold ph-arrow-counter-clockwise text-base"></i> RESET KE DATA DEFAULT
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Generic Item Editor Modal (For Division, Article, Product, Partner) -->
+    <div id="item-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-base-dark/90 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0">
+        <div class="glass-panel border-accent-blue/50 p-6 sm:p-8 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300 relative shadow-[0_0_40px_rgba(0,102,255,0.2)]">
+            <button onclick="closeItemModal()" class="absolute top-4 right-4 text-text-muted hover:text-white">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+            <h3 id="item-modal-title" class="text-xl font-bold text-white mb-1">Edit Item</h3>
+            <p id="item-modal-subtitle" class="text-text-muted text-xs mb-6">Isi formulir data di bawah ini.</p>
+            
+            <form id="item-editor-form" class="space-y-4">
+                <div id="item-modal-fields" class="space-y-4">
+                    <!-- Injected dynamically based on item type -->
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-surface-border">
+                    <button type="button" onclick="closeItemModal()" class="btn-secondary text-xs py-2 px-4">BATAL</button>
+                    <button type="submit" class="btn-primary clip-edges text-xs py-2 px-5 flex items-center gap-2">
+                        <i class="ph-bold ph-check text-base"></i> SIMPAN
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-base-dark/90 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0">
+        <div class="glass-panel border-red-500/40 p-6 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300 relative text-center">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto mb-4">
+                <i class="ph-bold ph-warning text-2xl"></i>
+            </div>
+            <h3 id="confirm-modal-title" class="text-lg font-bold text-white mb-2">Konfirmasi Hapus</h3>
+            <p id="confirm-modal-msg" class="text-text-muted text-xs mb-6">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+            
+            <div class="flex justify-center gap-3">
+                <button id="confirm-modal-cancel" class="btn-secondary text-xs py-2 px-4">BATAL</button>
+                <button id="confirm-modal-yes" class="btn-danger text-xs py-2 px-4">YA, HAPUS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="./js/admin.js"></script>
+</body>
+</html>

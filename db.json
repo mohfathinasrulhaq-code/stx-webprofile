@@ -1,0 +1,149 @@
+{
+  "_adminPassword": "36c3ef4dc1632282fb272cd1bb489f56:e1f3a6e3f61da47c7cf8c82aa3dec1dbb3dbbd610042ce406cdf53ba72ec04de7df9676b8bb22a48b9ff676de3b5bf9e53f3e99b165689705362412b2259703d",
+  "data": {
+    "hero": {
+      "tagline": "Unite In Every Spectrum",
+      "headlinePrefix": "UNITE IN",
+      "headlineHighlight": "EVERY",
+      "headlineSuffix": "SPECTRUM",
+      "sub": "Join the most dynamic esports and gaming community. Elevate your skills, connect with pros, and dominate the digital arena together.",
+      "cta1Text": "BECOME A MEMBER",
+      "cta1Link": "#join",
+      "cta2Text": "EXPLORE ROSTER",
+      "cta2Link": "#divisions"
+    },
+    "heroHeadline": "EVERY",
+    "heroSub": "Join the most dynamic esports and gaming community. Elevate your skills, connect with pros, and dominate the digital arena together.",
+    "statMembers": "350+",
+    "statDivisions": "6",
+    "statTournaments": "80+",
+    "statChamps": "30",
+    "divisions": [
+      {
+        "id": "div-1",
+        "title": "Delta Force Mobile",
+        "category": "ESPORTS",
+        "subtitle": "Pro Roster • 35 Players Active",
+        "badge": "STX 2025",
+        "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop",
+        "link": "#"
+      },
+      {
+        "id": "div-2",
+        "title": "MOBILE LEGENDS",
+        "category": "ESPORTS",
+        "subtitle": "Squad • 12 Active",
+        "badge": "STX 2025",
+        "image": "https://images.unsplash.com/photo-1614680376573-dfb367046420?q=80&w=1974&auto=format&fit=crop",
+        "link": "#"
+      },
+      {
+        "id": "div-3",
+        "title": "CONTENT PUBG Mobile",
+        "category": "CREATORS",
+        "subtitle": "Players • 40+ Active",
+        "badge": "STX BROTHERS",
+        "image": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=2070&auto=format&fit=crop",
+        "link": "#"
+      }
+    ],
+    "news": {
+      "featured": {
+        "tag": "UPDATE",
+        "category": "COMMUNITY",
+        "date": "OCTOBER 5, 2026",
+        "title": "STX SECURES CHAMPIONSHIP TITLE AT REGIONAL MAJORS",
+        "summary": "The STX Valorant roster put on an absolute clinic in the grand finals, sweeping the opposition to claim the trophy.",
+        "image": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=2165&auto=format&fit=crop",
+        "link": "#"
+      },
+      "articles": [
+        {
+          "id": "art-1",
+          "date": "OCTOBER 2, 2026",
+          "title": "New Merchandise Drop: The Cyber Collection",
+          "image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop",
+          "link": "#"
+        },
+        {
+          "id": "art-2",
+          "date": "SEPTEMBER 28, 2026",
+          "title": "Delta Force Division Open Recruitment Season 4",
+          "image": "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop",
+          "link": "#"
+        }
+      ]
+    },
+    "events": {
+      "match": {
+        "opponent": "STX vs DOMA",
+        "league": "MPLS Tour - Week 2",
+        "targetDate": "2026-11-01T20:00",
+        "buttonText": "SET REMINDER",
+        "buttonLink": "#"
+      },
+      "community": {
+        "title": "Give Away Aniversary STX 1st",
+        "subtitle": "Tiktok & Instagram",
+        "scheduleText": "OCT 10, 2026 • 20:00 GMT+7",
+        "buttonText": "JOIN NOW",
+        "buttonLink": "https://discord.gg/stx"
+      }
+    },
+    "products": [
+      {
+        "id": "prod-1",
+        "name": "STX Pro Jersey 2026",
+        "price": 350000,
+        "shipping": "Rp 20k - 50k",
+        "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=2000&auto=format&fit=crop"
+      },
+      {
+        "id": "prod-2",
+        "name": "STX Classic Hoodie",
+        "price": 450000,
+        "shipping": "Rp 20k - 50k",
+        "image": "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=2000&auto=format&fit=crop"
+      },
+      {
+        "id": "prod-3",
+        "name": "STX Gaming Mousepad",
+        "price": 200000,
+        "shipping": "Rp 15k - 35k",
+        "image": "https://images.unsplash.com/photo-1512756290469-ec264b7fbf87?q=80&w=2000&auto=format&fit=crop"
+      }
+    ],
+    "general": {
+      "siteName": "STX.GG",
+      "footerDesc": "The premier destination for competitive gaming, content creation, and community building in Southeast Asia.",
+      "discordUrl": "https://discord.gg/stx",
+      "instagramUrl": "https://instagram.com/official_spectranyx",
+      "youtubeUrl": "https://youtube.com/@stxcommunity",
+      "tiktokUrl": "https://tiktok.com/@official.spectranyx",
+      "adminEmail": "dekoleptorutang@gmail.com",
+      "partners": [
+        {
+          "id": "partner-1",
+          "name": "LUNATOPUP",
+          "url": "#"
+        },
+        {
+          "id": "partner-2",
+          "name": "GLITCH",
+          "url": "#"
+        },
+        {
+          "id": "partner-3",
+          "name": "NYX FAMILY",
+          "url": "#"
+        }
+      ]
+    },
+    "stats": {
+      "statMembers": "350+",
+      "statDivisions": "6",
+      "statTournaments": "80+",
+      "statChamps": "30"
+    }
+  }
+}
