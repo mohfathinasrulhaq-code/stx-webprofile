@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let globalEmailTemplate = "";
 
     // Dynamic Data Injection from Backend API
-    fetch('/api/data')
+    fetch('/api/data?t=' + new Date().getTime())
         .then(res => res.json())
         .then(savedData => {
             if (!savedData) return;
@@ -404,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="p-6 flex-grow flex flex-col justify-between">
                     <div>
                         <h3 class="text-2xl font-bold text-white mb-2">${p.name}</h3>
+                        <p class="text-sm text-text-muted mb-4 line-clamp-2">${p.description || 'Barang merchandise eksklusif berkualitas premium dari STX Community.'}</p>
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-xl text-accent-glow font-bold">Rp ${(Number(p.price) || 0).toLocaleString('id-ID')}</span>
                             <span class="text-xs text-text-muted">Est. Ongkir: ${p.shipping || 'Rp 20k - 50k'}</span>
@@ -434,57 +435,90 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle Purchase Form Submit
     const purchaseForm = document.getElementById('purchase-form');
     if (purchaseForm) {
-        purchaseForm.addEventListener('submit', function(e) {
+        purchaseForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const productName = document.getElementById('product-name-input').value;
-            const buyerName = document.getElementById('buyer-name').value;
-            const buyerPhone = document.getElementById('buyer-phone').value;
-            const buyerAddress = document.getElementById('buyer-address').value;
-            const buyerAccount = document.getElementById('buyer-account').value;
-            const paymentMethod = document.getElementById('payment-method').value;
+            const submitBtn = document.getElementById('checkout-submit-btn');
+            const resultDiv = document.getElementById('checkout-result');
+            const orderIdSpan = document.getElementById('checkout-order-id');
+            const proofInput = document.getElementById('buyer-proof');
             
-            const emailCommunity = globalAdminEmail;
-            const subject = encodeURIComponent(`Pesanan Baru: ${productName} - dari ${buyerName}`);
-            
-            let rawBody = '';
-            if (globalEmailTemplate) {
-                rawBody = globalEmailTemplate
-                    .replace(/{product}/g, productName)
-                    .replace(/{buyerName}/g, buyerName)
-                    .replace(/{buyerPhone}/g, buyerPhone)
-                    .replace(/{buyerAddress}/g, buyerAddress)
-                    .replace(/{buyerAccount}/g, buyerAccount)
-                    .replace(/{paymentMethod}/g, paymentMethod);
-            } else {
-                rawBody = `Halo Admin STX Community,
-            
-Terdapat pesanan merchandise baru dengan detail sebagai berikut:
-
-[ DETAIL PRODUK ]
-- Produk: ${productName}
-
-[ DATA PENERIMA ]
-- Nama Penerima: ${buyerName}
-- Nomor HP/WA: ${buyerPhone}
-- Alamat Lengkap: 
-${buyerAddress}
-
-[ DETAIL PEMBAYARAN ]
-- Rekening Pengirim (Pembeli): ${buyerAccount}
-- Metode Tujuan (Rekening Komunitas): ${paymentMethod}
-
-*Catatan untuk pembeli: Silakan lampirkan (attach) bukti transfer Anda pada email ini sebelum menekan tombol kirim.*
-
-Terima kasih.`;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'MEMPROSES...';
             }
             
-            const body = encodeURIComponent(rawBody);
-            
-            window.location.href = `mailto:${emailCommunity}?subject=${subject}&body=${body}`;
-            
-            closePurchaseModal();
-            purchaseForm.reset();
+            try {
+                // Convert file to base64
+                let paymentProof = '';
+                if (proofInput && proofInput.files[0]) {
+                    const file = proofInput.files[0];
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert("Ukuran file terlalu besar! Maksimal 5MB.");
+                        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'KONFIRMASI PEMBAYARAN'; }
+                        return;
+                    }
+                    paymentProof = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = error => reject(error);
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    alert("Harap unggah bukti transfer!");
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'KONFIRMASI PEMBAYARAN'; }
+                    return;
+                }
+
+                const payload = {
+                    productName: document.getElementById('product-name-input').value,
+                    buyerName: document.getElementById('buyer-name').value,
+                    buyerPhone: document.getElementById('buyer-phone').value,
+                    buyerAddress: document.getElementById('buyer-address').value,
+                    buyerAccount: document.getElementById('buyer-account').value,
+                    paymentMethod: document.getElementById('payment-method').value,
+                    paymentProof: paymentProof
+                };
+                
+                const res = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    if (resultDiv && orderIdSpan) {
+                        orderIdSpan.innerText = result.orderId;
+                        resultDiv.classList.remove('hidden');
+                        
+                        // Hide other form fields visually to focus on result
+                        Array.from(purchaseForm.children).forEach(child => {
+                            if (child.id !== 'checkout-result' && child.tagName !== 'BUTTON' && child.tagName !== 'INPUT' && child.type !== 'hidden') {
+                                child.classList.add('hidden');
+                            }
+                        });
+                        
+                        if (submitBtn) {
+                            submitBtn.innerHTML = 'TUTUP';
+                            submitBtn.onclick = (ev) => {
+                                ev.preventDefault();
+                                closePurchaseModal();
+                                setTimeout(() => window.location.reload(), 500);
+                            };
+                            submitBtn.disabled = false;
+                        }
+                    }
+                } else {
+                    alert(result.error || "Gagal memproses pesanan.");
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'KONFIRMASI PEMBAYARAN'; }
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Kesalahan jaringan saat memproses pesanan.");
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = 'KONFIRMASI PEMBAYARAN'; }
+            }
         });
     }
 });

@@ -156,6 +156,7 @@ const DEFAULT_DATA = {
             name: "STX Pro Jersey 2026",
             price: 350000,
             shipping: "Rp 20k - 50k",
+            description: "Jersey resmi e-sports STX dengan bahan dry-fit premium, desain ergonomis, dan sirkulasi udara maksimal untuk kenyamanan gaming maraton.",
             image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=2000&auto=format&fit=crop"
         },
         {
@@ -163,6 +164,7 @@ const DEFAULT_DATA = {
             name: "STX Classic Hoodie",
             price: 450000,
             shipping: "Rp 20k - 50k",
+            description: "Hoodie pullover bahan cotton fleece tebal dengan logo bordir STX premium. Cocok untuk cuaca dingin dan gaya kasual harian.",
             image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=2000&auto=format&fit=crop"
         },
         {
@@ -170,6 +172,7 @@ const DEFAULT_DATA = {
             name: "STX Gaming Mousepad",
             price: 200000,
             shipping: "Rp 15k - 35k",
+            description: "Mousepad gaming ukuran XL dengan permukaan micro-woven untuk kontrol presisi dan pinggiran dijahit anti-kelupas.",
             image: "https://images.unsplash.com/photo-1512756290469-ec264b7fbf87?q=80&w=2000&auto=format&fit=crop"
         }
     ],
@@ -187,10 +190,20 @@ const DEFAULT_DATA = {
             { id: "partner-2", name: "GLITCH", url: "#" },
             { id: "partner-3", name: "NYX FAMILY", url: "#" }
         ]
-    }
+    },
+    orders: []
 };
 
 const crypto = require('crypto');
+
+// --- DUITKU CONFIGURATION (SANDBOX) ---
+// Ganti dengan Merchant Code dan API Key dari dashboard Duitku Sandbox Anda
+const DUITKU_MERCHANT_CODE = process.env.DUITKU_MERCHANT_CODE || "GANTI_DENGAN_MERCHANT_CODE_ANDA";
+const DUITKU_API_KEY = process.env.DUITKU_API_KEY || "GANTI_DENGAN_API_KEY_ANDA";
+const DUITKU_BASE_URL = "https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry";
+const DUITKU_CALLBACK_URL = process.env.CALLBACK_URL || "https://domain-anda.com/api/duitku/callback";
+const DUITKU_RETURN_URL = process.env.RETURN_URL || "https://domain-anda.com/shop.html";
+// --------------------------------------
 
 // Security Utilities
 function hashPassword(password) {
@@ -284,47 +297,61 @@ function verifyAuthToken(req) {
 }
 
 // Function to read DB with automatic password hash migration
-function readDb() {
-    if (fs.existsSync(DB_FILE)) {
-        try {
-            const raw = fs.readFileSync(DB_FILE, 'utf-8');
-            const parsed = JSON.parse(raw);
-            if (!parsed.data) {
-                parsed.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                writeDb(parsed);
-            } else {
-                let changed = false;
-                for (const key of Object.keys(DEFAULT_DATA)) {
-                    if (parsed.data[key] === undefined) {
-                        parsed.data[key] = JSON.parse(JSON.stringify(DEFAULT_DATA[key]));
-                        changed = true;
-                    }
-                }
-                if (changed) writeDb(parsed);
-            }
-            if (!parsed._adminPassword) {
-                parsed._adminPassword = hashPassword("admin");
-                writeDb(parsed);
-            } else if (!parsed._adminPassword.includes(':')) {
-                // Auto-upgrade plain password to secure scrypt hash
-                parsed._adminPassword = hashPassword(parsed._adminPassword);
-                writeDb(parsed);
-            }
-            return parsed;
-        } catch (e) {
-            console.error("Error reading db.json, using defaults:", e);
-        }
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGODB_URL || "mongodb://localhost:27017/webprofile";
+const { MongoClient } = require('mongodb');
+const client = new MongoClient(MONGODB_URI);
+let dbInstance = null;
+
+async function getDb() {
+    if (!dbInstance) {
+        await client.connect();
+        dbInstance = client.db('webprofile');
+        console.log("Berhasil terhubung ke MongoDB!");
     }
-    const initDb = {
-        _adminPassword: hashPassword("admin"),
-        data: DEFAULT_DATA
-    };
-    writeDb(initDb);
-    return initDb;
+    return dbInstance;
 }
 
-function writeDb(fullObj) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(fullObj, null, 2), 'utf-8');
+async function getGlobalConfig() {
+    const db = await getDb();
+    const collection = db.collection('config');
+    let config = await collection.findOne({ _id: 'global_config' });
+    
+    if (!config) {
+        config = {
+            _id: 'global_config',
+            _adminPassword: hashPassword("admin"),
+            data: DEFAULT_DATA
+        };
+        await collection.insertOne(config);
+    } else {
+        // Migration logic
+        let changed = false;
+        if (!config.data) {
+            config.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            changed = true;
+        } else {
+            for (const key of Object.keys(DEFAULT_DATA)) {
+                if (config.data[key] === undefined) {
+                    config.data[key] = JSON.parse(JSON.stringify(DEFAULT_DATA[key]));
+                    changed = true;
+                }
+            }
+        }
+        if (!config._adminPassword || !config._adminPassword.includes(':')) {
+            config._adminPassword = hashPassword(config._adminPassword || "admin");
+            changed = true;
+        }
+        if (changed) {
+            await collection.updateOne({ _id: 'global_config' }, { $set: config });
+        }
+    }
+    return config;
+}
+
+async function updateGlobalConfig(updateDoc) {
+    const db = await getDb();
+    const collection = db.collection('config');
+    await collection.updateOne({ _id: 'global_config' }, { $set: updateDoc }, { upsert: true });
 }
 
 // Security Headers
@@ -366,15 +393,23 @@ app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html'))
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 // API Endpoint untuk mengambil data ke pengunjung (Global)
-app.get('/api/data', (req, res) => {
-    const db = readDb();
-    res.json(db.data || DEFAULT_DATA);
+app.get('/api/data', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    try {
+        const db = await getGlobalConfig();
+        res.json(db.data || DEFAULT_DATA);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Database error" });
+    }
 });
 
 // Verifikasi password admin dengan Rate Limiting & Auth Token
-app.post('/api/verify', rateLimitLogin, (req, res) => {
+app.post('/api/verify', rateLimitLogin, async (req, res) => {
     const { password } = req.body;
-    const db = readDb();
+    const db = await getGlobalConfig();
 
     if (!password || !verifyPassword(password, db._adminPassword)) {
         recordFailedLogin(req);
@@ -395,9 +430,9 @@ app.post('/api/verify', rateLimitLogin, (req, res) => {
 });
 
 // API Endpoint untuk menyimpan data (Admin - Protected)
-app.post('/api/save', (req, res) => {
+app.post('/api/save', async (req, res) => {
     const { password, data } = req.body;
-    const db = readDb();
+    const db = await getGlobalConfig();
 
     const isTokenValid = verifyAuthToken(req);
     const isPasswordValid = password && verifyPassword(password, db._adminPassword);
@@ -419,14 +454,14 @@ app.post('/api/save', (req, res) => {
     }
 
     db.data = data;
-    writeDb(db);
+    await updateGlobalConfig({ data: db.data });
     res.json({ success: true, message: "Semua perubahan website berhasil disimpan secara Global!" });
 });
 
 // API Endpoint untuk ganti password admin (Protected)
-app.post('/api/change-password', (req, res) => {
+app.post('/api/change-password', async (req, res) => {
     const { oldPassword, newPassword } = req.body;
-    const db = readDb();
+    const db = await getGlobalConfig();
 
     if (!oldPassword || !verifyPassword(oldPassword, db._adminPassword)) {
         return res.status(401).json({ error: "Password lama tidak sesuai!" });
@@ -437,7 +472,7 @@ app.post('/api/change-password', (req, res) => {
     }
 
     db._adminPassword = hashPassword(newPassword.trim());
-    writeDb(db);
+    await updateGlobalConfig({ _adminPassword: db._adminPassword });
 
     // Invalidate all existing tokens on password change
     authTokens.clear();
@@ -452,9 +487,9 @@ app.post('/api/change-password', (req, res) => {
 });
 
 // API Endpoint untuk reset data ke default (Protected)
-app.post('/api/reset', (req, res) => {
+app.post('/api/reset', async (req, res) => {
     const { password } = req.body;
-    const db = readDb();
+    const db = await getGlobalConfig();
 
     const isTokenValid = verifyAuthToken(req);
     const isPasswordValid = password && verifyPassword(password, db._adminPassword);
@@ -463,15 +498,152 @@ app.post('/api/reset', (req, res) => {
         return res.status(401).json({ error: "Autentikasi gagal!" });
     }
 
+    // Preserve orders when resetting default data
+    const existingOrders = db.data.orders || [];
     db.data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    writeDb(db);
+    db.data.orders = existingOrders;
+    await updateGlobalConfig({ data: db.data });
     res.json({ success: true, message: "Data website berhasil direset ke default!" });
+});
+
+// API Endpoint untuk memproses pemesanan & Generate Payment Link Duitku (Otomatis)
+app.post('/api/checkout', async (req, res) => {
+    const { productName, buyerName, buyerPhone, buyerAddress, price } = req.body;
+    
+    if (!buyerName || !buyerPhone || !buyerAddress) {
+        return res.status(400).json({ error: "Data pembeli harus diisi!" });
+    }
+
+    const db = await getGlobalConfig();
+    if (!db.data.orders) db.data.orders = [];
+    
+    // Generate Order ID
+    const randomCode = Math.floor(100 + Math.random() * 900);
+    const timestamp = Date.now().toString().slice(-6);
+    const orderId = `STX-ORD-${timestamp}-${randomCode}`;
+
+    // Karena Duitku butuh harga berbentuk angka, kita pastikan dari frontend (atau di sini set fallback default)
+    const amount = parseInt(price) || 50000; 
+
+    // Generate Signature Duitku (MD5: merchantCode + orderId + amount + apiKey)
+    const signatureRaw = `${DUITKU_MERCHANT_CODE}${orderId}${amount}${DUITKU_API_KEY}`;
+    const signature = crypto.createHash('md5').update(signatureRaw).digest('hex');
+
+    // Payload request ke Duitku
+    const payload = {
+        merchantCode: DUITKU_MERCHANT_CODE,
+        paymentAmount: amount,
+        merchantOrderId: orderId,
+        productDetails: productName || "Produk STX",
+        email: "buyer@example.com", // Opsional, bisa diganti email asli jika ada form email
+        customerVaName: buyerName,
+        phoneNumber: buyerPhone,
+        returnUrl: DUITKU_RETURN_URL, // Halaman setelah pelanggan selesai bayar
+        callbackUrl: DUITKU_CALLBACK_URL, // Notifikasi sistem ke sistem (Webhook)
+        signature: signature,
+        expiryPeriod: 1440 // Waktu kedaluwarsa 24 jam (dalam menit)
+    };
+
+    try {
+        const response = await fetch(DUITKU_BASE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+
+        if (result.statusCode === "00") {
+            const newOrder = {
+                id: orderId,
+                date: new Date().toISOString(),
+                productName: payload.productDetails,
+                buyerName,
+                buyerPhone,
+                buyerAddress,
+                paymentMethod: "Otomatis (Duitku)",
+                status: "PENDING_PAYMENT",
+                paymentUrl: result.paymentUrl
+            };
+            db.data.orders.push(newOrder);
+            await updateGlobalConfig({ data: db.data });
+            
+            // Kirim link pembayaran (paymentUrl) ke frontend
+            res.json({ success: true, orderId, paymentUrl: result.paymentUrl, message: "Pesanan berhasil! Mengarahkan ke pembayaran..." });
+        } else {
+            res.status(400).json({ error: "Gagal membuat transaksi Duitku: " + result.statusMessage });
+        }
+    } catch (error) {
+        console.error("Duitku Error:", error);
+        res.status(500).json({ error: "Terjadi kesalahan server saat menghubungi payment gateway." });
+    }
+});
+
+// API Endpoint Webhook Callback Duitku (Dipanggil otomatis oleh server Duitku jika bayar lunas)
+app.post('/api/duitku/callback', express.urlencoded({ extended: true }), async (req, res) => {
+    // Duitku kadang mengirim callback dalam bentuk x-www-form-urlencoded
+    const data = req.body.merchantCode ? req.body : req.query; // Fallback jika format berbeda
+    
+    const { merchantCode, amount, merchantOrderId, signature, resultCode, reference } = data;
+    
+    if (!merchantOrderId || !signature) {
+        return res.status(400).send("Bad Request");
+    }
+
+    // Verifikasi Keaslian Notifikasi (MD5: merchantCode + amount + merchantOrderId + apiKey)
+    const validSignatureRaw = `${merchantCode}${amount}${merchantOrderId}${DUITKU_API_KEY}`;
+    const validSignature = crypto.createHash('md5').update(validSignatureRaw).digest('hex');
+    
+    if (signature !== validSignature) {
+        console.error("Duitku Callback Invalid Signature!", merchantOrderId);
+        return res.status(403).json({ error: "Invalid signature" });
+    }
+
+    // resultCode "00" berarti SUCCESS / Berhasil dibayar
+    if (resultCode === "00") {
+        const db = await getGlobalConfig();
+        if (!db.data.orders) db.data.orders = [];
+        
+        const orderIndex = db.data.orders.findIndex(o => o.id === merchantOrderId);
+        if (orderIndex !== -1) {
+            // Update status pesanan jadi LUNAS secara OTOMATIS!
+            db.data.orders[orderIndex].status = "PAID";
+            db.data.orders[orderIndex].paymentReference = reference;
+            await updateGlobalConfig({ data: db.data });
+            console.log(`[Duitku] Pesanan ${merchantOrderId} LUNAS!`);
+        }
+    }
+    
+    // Duitku mengharapkan balasan string kosong atau JSON sukses (HTTP Status 200)
+    res.status(200).send("OK");
+});
+
+// API Endpoint untuk update status pesanan (Admin - Protected)
+app.post('/api/orders/update', async (req, res) => {
+    const { orderId, status } = req.body;
+    const db = await getGlobalConfig();
+
+    if (!verifyAuthToken(req)) {
+        return res.status(401).json({ error: "Sesi admin tidak valid!" });
+    }
+
+    if (!db.data.orders) db.data.orders = [];
+    const orderIndex = db.data.orders.findIndex(o => o.id === orderId);
+    
+    if (orderIndex === -1) {
+        return res.status(404).json({ error: "Pesanan tidak ditemukan!" });
+    }
+
+    db.data.orders[orderIndex].status = status;
+    await updateGlobalConfig({ data: db.data });
+
+    res.json({ success: true, message: `Status pesanan ${orderId} berhasil diubah menjadi ${status}!` });
 });
 
 // Jalankan Server jika dipanggil langsung
 if (require.main === module) {
     app.listen(PORT, () => {
-        readDb(); // Initialize and migrate DB if needed
+        getGlobalConfig().catch(console.error); // Initialize and migrate DB if needed
         console.log(`\n=== STX COMMUNITY SERVER SECURE V2 ===`);
         console.log(`Website Utama : http://localhost:${PORT}`);
         console.log(`Halaman Shop  : http://localhost:${PORT}/shop.html`);

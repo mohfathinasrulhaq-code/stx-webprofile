@@ -216,15 +216,26 @@
                     <input type="text" id="buyer-account" required class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors" placeholder="Contoh: BCA - 1234567890 (A/N Nama)">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Metode Pembayaran</label>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Metode Pembayaran (Tujuan)</label>
                     <select id="payment-method" required class="w-full bg-surface border border-surface-border p-3 text-white focus:outline-none focus:border-accent-blue transition-colors appearance-none">
                         <option value="">Pilih Metode Pembayaran (Tujuan)</option>
                     </select>
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-text-muted mb-1 uppercase tracking-wider">Upload Bukti Transfer</label>
+                    <input type="file" id="buyer-proof" accept="image/*" required class="w-full bg-surface border border-surface-border p-2 text-white focus:outline-none focus:border-accent-blue transition-colors text-sm">
+                    <p class="text-[10px] text-text-muted mt-1">Format: JPG, PNG maksimal 5MB.</p>
+                </div>
                 
+                <div id="checkout-result" class="hidden p-4 border border-green-500/30 bg-green-500/10 rounded mb-4">
+                    <p class="text-sm font-bold text-green-400 mb-1">✅ Pesanan Berhasil Dibuat!</p>
+                    <p class="text-xs text-white">Nomor Pesanan Anda: <span id="checkout-order-id" class="font-mono text-accent-glow font-bold text-base block mt-1"></span></p>
+                    <p class="text-[10px] text-text-muted mt-2">Mohon simpan Nomor Pesanan ini (struk) untuk melacak status pesanan Anda. Admin kami akan segera memverifikasi pembayaran Anda.</p>
+                </div>
+
                 <div class="pt-4 border-t border-surface-border mt-6">
-                    <button type="submit" class="w-full btn-primary text-sm py-3">PROSES PESANAN KE EMAIL</button>
-                    <p class="text-[10px] text-text-muted text-center mt-3">Data pesanan akan diformat dan dikirim otomatis ke email Admin melalui aplikasi Mail Anda. Harap sertakan bukti transfer pada email tersebut.</p>
+                    <button type="submit" id="checkout-submit-btn" class="w-full btn-primary text-sm py-3">KONFIRMASI PEMBAYARAN</button>
+                    <p class="text-[10px] text-text-muted text-center mt-3">Sistem kami akan mencatat pesanan Anda secara internal. Data Anda aman berserta bukti transfer.</p>
                 </div>
             </form>
         </div>

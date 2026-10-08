@@ -96,6 +96,7 @@
         "name": "STX Pro Jersey 2026",
         "price": 350000,
         "shipping": "Rp 20k - 50k",
+        "description": "Jersey resmi e-sports STX dengan bahan dry-fit premium, desain ergonomis, dan sirkulasi udara maksimal untuk kenyamanan gaming maraton.",
         "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=2000&auto=format&fit=crop"
       },
       {
@@ -103,6 +104,7 @@
         "name": "STX Classic Hoodie",
         "price": 450000,
         "shipping": "Rp 20k - 50k",
+        "description": "Hoodie pullover bahan cotton fleece tebal dengan logo bordir STX premium. Cocok untuk cuaca dingin dan gaya kasual harian.",
         "image": "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=2000&auto=format&fit=crop"
       },
       {
@@ -110,6 +112,7 @@
         "name": "STX Gaming Mousepad",
         "price": 200000,
         "shipping": "Rp 15k - 35k",
+        "description": "Mousepad gaming ukuran XL dengan permukaan micro-woven untuk kontrol presisi dan pinggiran dijahit anti-kelupas.",
         "image": "https://images.unsplash.com/photo-1512756290469-ec264b7fbf87?q=80&w=2000&auto=format&fit=crop"
       }
     ],

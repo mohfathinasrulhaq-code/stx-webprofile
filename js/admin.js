@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Fetch Website Data from Backend
     async function loadWebsiteData() {
         try {
-            const res = await fetch('/api/data');
+            const res = await fetch('/api/data?t=' + new Date().getTime());
             websiteData = await res.json();
             populateForms(websiteData);
             updateSyncStatus(true);
@@ -287,6 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Products List
         renderProductsList(data.products || []);
+
+        // Orders List
+        renderOrdersList(data.orders || []);
 
         // General & Socials
         const gen = data.general || {};
@@ -770,6 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     name: getVal('modal-prod-name'),
                     price: Number(getVal('modal-prod-price')) || 0,
                     shipping: getVal('modal-prod-shipping') || 'Rp 20k - 50k',
+                    description: getVal('modal-prod-desc'),
                     image: getVal('modal-prod-img') || 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=2000'
                 };
                 if (!websiteData.products) websiteData.products = [];
@@ -996,6 +1000,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase mb-1">Deskripsi Produk</label>
+                    <textarea id="modal-prod-desc" class="input-field min-h-[80px]" placeholder="Contoh: Jersey resmi e-sports STX dengan bahan premium..."></textarea>
+                </div>
+                <div>
                     <label class="block text-xs font-bold text-text-muted uppercase mb-1">URL Gambar Produk</label>
                     <input type="text" id="modal-prod-img" class="input-field text-sm font-mono" placeholder="https://images.unsplash.com/...">
                 </div>
@@ -1021,6 +1029,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <label class="block text-xs font-bold text-text-muted uppercase mb-1">Estimasi Ongkir</label>
                     <input type="text" id="modal-prod-shipping" class="input-field" value="${item.shipping || ''}">
                 </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-text-muted uppercase mb-1">Deskripsi Produk</label>
+                <textarea id="modal-prod-desc" class="input-field min-h-[80px]">${item.description || ''}</textarea>
             </div>
             <div>
                 <label class="block text-xs font-bold text-text-muted uppercase mb-1">URL Gambar Produk</label>
@@ -1078,6 +1090,115 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSyncStatus(false);
             showToast("Mitra dihapus.", "info");
         });
+    };
+
+    // Render Orders List
+    window.renderOrdersList = function(ordersList) {
+        const container = document.getElementById('orders-list-container');
+        if (!container) return;
+
+        if (ordersList.length === 0) {
+            container.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-text-muted">Belum ada pesanan masuk.</td></tr>`;
+            return;
+        }
+
+        // Sort by date descending
+        const sortedOrders = [...ordersList].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        container.innerHTML = sortedOrders.map(order => {
+            const statusColor = order.status === 'PAID' ? 'text-green-400 bg-green-400/10 border-green-400/30' : 
+                              order.status === 'REJECTED' ? 'text-red-400 bg-red-400/10 border-red-400/30' : 
+                              'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
+            
+            const dateStr = new Date(order.date).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+
+            return `
+            <tr class="hover:bg-surface-hover/50 transition-colors border-b border-surface-border/50">
+                <td class="px-4 py-3">
+                    <div class="font-mono text-accent-glow font-bold">${order.id}</div>
+                    <div class="text-[10px] text-text-muted">${dateStr}</div>
+                </td>
+                <td class="px-4 py-3 text-white font-bold">${order.productName}</td>
+                <td class="px-4 py-3">
+                    <div class="text-white text-sm">${order.buyerName}</div>
+                    <div class="text-[10px] text-text-muted">${order.buyerPhone}</div>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-1 text-[10px] font-bold rounded border ${statusColor}">${order.status}</span>
+                </td>
+                <td class="px-4 py-3 text-right space-x-1">
+                    <button onclick="viewProof('${order.id}')" class="px-2 py-1 bg-accent-blue/20 text-accent-glow rounded hover:bg-accent-blue hover:text-white transition-colors text-[10px] font-bold" title="Lihat Bukti Transfer"><i class="ph-bold ph-image text-sm"></i></button>
+                    ${order.status === 'PENDING' ? `
+                        <button onclick="updateOrderStatus('${order.id}', 'PAID')" class="px-2 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500 hover:text-white transition-colors text-[10px] font-bold" title="Konfirmasi Pembayaran"><i class="ph-bold ph-check text-sm"></i></button>
+                        <button onclick="updateOrderStatus('${order.id}', 'REJECTED')" class="px-2 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500 hover:text-white transition-colors text-[10px] font-bold" title="Tolak Pesanan"><i class="ph-bold ph-x text-sm"></i></button>
+                    ` : ''}
+                </td>
+            </tr>
+            `;
+        }).join('');
+    };
+
+    window.viewProof = function(orderId) {
+        const order = websiteData.orders.find(o => o.id === orderId);
+        if (!order || !order.paymentProof) {
+            showToast("Bukti transfer tidak ditemukan atau belum diunggah.", "error");
+            return;
+        }
+
+        const modal = document.getElementById('proof-modal');
+        const img = document.getElementById('proof-image');
+        const idSpan = document.getElementById('proof-order-id');
+        const accSpan = document.getElementById('proof-account');
+
+        if (img) img.src = order.paymentProof;
+        if (idSpan) idSpan.innerText = order.id;
+        if (accSpan) accSpan.innerText = order.buyerAccount;
+
+        if (modal) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                if (modal.children[0]) modal.children[0].classList.remove('scale-95');
+            }, 10);
+        }
+    };
+
+    window.closeProofModal = function() {
+        const modal = document.getElementById('proof-modal');
+        if (modal) {
+            modal.classList.add('opacity-0');
+            if (modal.children[0]) modal.children[0].classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('proof-image').src = "";
+            }, 300);
+        }
+    };
+
+    window.updateOrderStatus = async function(orderId, status) {
+        const password = sessionStorage.getItem(SESSION_KEY);
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        try {
+            const res = await fetch('/api/orders/update', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                },
+                body: JSON.stringify({ password, orderId, status })
+            });
+            const result = await res.json();
+            if (res.ok) {
+                showToast(result.message, "success");
+                const order = websiteData.orders.find(o => o.id === orderId);
+                if (order) order.status = status;
+                renderOrdersList(websiteData.orders);
+            } else {
+                showToast(result.error || "Gagal mengubah status pesanan.", "error");
+            }
+        } catch (e) {
+            showToast("Terjadi kesalahan jaringan.", "error");
+        }
     };
 
     // 11. Confirmation Modal Helper
